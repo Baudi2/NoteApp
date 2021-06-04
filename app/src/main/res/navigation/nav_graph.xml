@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/noteMainFragment">
+
+    <fragment
+        android:id="@+id/noteMainFragment"
+        android:name="ru.startandroid.develop.notebook.view.NoteMainFragment"
+        android:label="Записки"
+        tools:layout="@layout/note_main_fragment" >
+        <action
+            android:id="@+id/action_noteMainFragment_to_noteAddEditFragment"
+            app:destination="@id/noteAddEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/noteAddEditFragment"
+        android:name="ru.startandroid.develop.notebook.view.NoteAddEditFragment"
+        android:label="{isAdd}"
+        tools:layout="@layout/note_add_edit_fragment">
+        <argument
+            android:name="isAdd"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_noteAddEditFragment_to_noteMainFragment"
+            app:destination="@id/noteMainFragment"
+            app:popUpTo="@+id/noteMainFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="note"
+            app:argType="ru.startandroid.develop.notebook.model.Note"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+</navigation>

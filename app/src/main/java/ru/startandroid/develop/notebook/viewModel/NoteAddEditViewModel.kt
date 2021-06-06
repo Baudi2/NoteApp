@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.startandroid.develop.notebook.model.Note
 import ru.startandroid.develop.notebook.model.NoteDao
+import ru.startandroid.develop.notebook.utils.shortToast
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,11 +23,11 @@ class NoteAddEditViewModel @Inject constructor(
         }
     }
 
-    fun updateItem(noteDelete: Note, noteInsert: Note) {
+    fun updatedItem(note: Note) {
         viewModelScope.launch(Dispatchers.IO) {
-            noteDao.insertNote(noteInsert)
-            noteDao.delete(noteDelete)
+            noteDao.update(note)
             withContext(Dispatchers.Main) {
+                shortToast("Updated")
             }
         }
     }

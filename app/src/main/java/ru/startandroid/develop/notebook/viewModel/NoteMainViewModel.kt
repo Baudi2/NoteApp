@@ -1,10 +1,9 @@
 package ru.startandroid.develop.notebook.viewModel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.startandroid.develop.notebook.model.Note
@@ -19,6 +18,10 @@ class NoteMainViewModel @Inject constructor(
 
     val notes = noteDao.getNotes().asLiveData()
 
+    private val _showText = MutableLiveData<Boolean>()
+    val showText: LiveData<Boolean>
+        get() = _showText
+
     fun deleteAllNotesFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.deleteAllNotes()
@@ -31,6 +34,16 @@ class NoteMainViewModel @Inject constructor(
     fun deleteSingleNote(note: Note) {
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.delete(note)
+        }
+    }
+
+    fun delayedShowNoActiveNotes() {
+        _showText.value = false
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(400)
+            withContext(Dispatchers.Main) {
+                _showText.value = true
+            }
         }
     }
 }

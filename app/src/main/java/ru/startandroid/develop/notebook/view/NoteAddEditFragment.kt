@@ -72,9 +72,10 @@ class NoteAddEditFragment : Fragment(R.layout.note_add_edit_fragment) {
 
     private fun updateNote() {
         val note = args.note
+        val id = note!!.id
         val header = binding.editTextHeader.text.toString()
-        val desc = binding.descEditText.text.toString()
-        val noteInsert = Note(header = header, description = desc)
-        viewModel.updateItem(note!!, noteInsert)
+        val description = binding.descEditText.text.toString()
+        val editedNote = Note(id = id, header = header, description = description)
+        viewModel.updatedItem(editedNote)
     }
 }

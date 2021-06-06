@@ -76,6 +76,13 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
         return when (item.itemId) {
             R.id.menu_menu_delete -> {
                 viewModel.deleteAllNotesFromDb()
+                viewModel.showText.observe(viewLifecycleOwner) {
+                    if (it == true) {
+
+                        binding.noActiveNotes.visibility = View.VISIBLE
+                    }
+                }
+                viewModel.delayedShowNoActiveNotes()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -1,6 +1,7 @@
 package ru.startandroid.develop.notebook.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -32,6 +33,8 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
 
         setHasOptionsMenu(true)
 
+
+
         val adapter = NoteAdapter(this)
         val layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
 
@@ -51,7 +54,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
             adapter.submitList(it)
         }
     }
-
+    
     private fun navigateToAdd() {
         val action =
             NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment("Создать заметку")

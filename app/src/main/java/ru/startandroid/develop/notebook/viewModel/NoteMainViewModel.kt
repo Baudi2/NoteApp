@@ -41,9 +41,10 @@ class NoteMainViewModel @Inject constructor(
         _showText.value = false
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)
-            withContext(Dispatchers.Main) {
-                _showText.value = true
-            }
+//            withContext(Dispatchers.Main) {
+//                _showText.value = true
+//            }
+            _showText.postValue(true)
         }
     }
 }

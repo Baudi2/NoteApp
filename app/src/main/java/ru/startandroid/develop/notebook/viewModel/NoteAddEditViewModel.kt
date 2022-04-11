@@ -26,9 +26,6 @@ class NoteAddEditViewModel @Inject constructor(
     fun updatedItem(note: Note) {
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.update(note)
-            withContext(Dispatchers.Main) {
-                shortToast("Updated")
-            }
         }
     }
 }

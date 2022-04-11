@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Notebook" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimaryVariant">@color/top_toolbar</item>
+        <item name="colorPrimaryVariant">@color/status_bar_color</item>
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->

@@ -1,7 +1,6 @@
 package ru.startandroid.develop.notebook.view
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -34,7 +33,6 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
         setHasOptionsMenu(true)
 
 
-
         val adapter = NoteAdapter(this)
         val layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
 
@@ -54,7 +52,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
             adapter.submitList(it)
         }
     }
-    
+
     private fun navigateToAdd() {
         val action =
             NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment("Создать заметку")
@@ -62,7 +60,8 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
     }
 
     override fun onItemClick(note: Note) {
-        val action = NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment("Изменить", note)
+        val action =
+            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment("Изменить", note)
         findNavController().navigate(action)
     }
 
@@ -94,13 +93,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
 
 
     @SuppressLint("RestrictedApi")
-    fun showPopup(
-        view: View,
-        menu: Int,
-        message: String,
-        menuItemId: Int,
-        note: Note
-    ) {
+    fun showPopup(view: View, menu: Int, message: String, menuItemId: Int, note: Note) {
         val menuBuilder = MenuBuilder(APP_ACTIVITY)
         val menuInflater = MenuInflater(APP_ACTIVITY)
         menuInflater.inflate(menu, menuBuilder)

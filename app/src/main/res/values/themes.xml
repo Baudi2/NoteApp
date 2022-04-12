@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/teal_adaptive_color</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
@@ -19,5 +19,14 @@
     <style name="ChatPopupMenu" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
         <item name="android:dropDownHorizontalOffset">-60dp</item>
         <item name="android:dropDownVerticalOffset">30dp</item>
+    </style>
+
+    <style name="DarkModeRadioButtonStyle">
+        <item name="android:buttonTint">@color/radio_button_tint</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textColor">@color/adaptive_text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
     </style>
 </resources>

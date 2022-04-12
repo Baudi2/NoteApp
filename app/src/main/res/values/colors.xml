@@ -3,7 +3,6 @@
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -14,4 +13,10 @@
 
     <color name="edit_text_hint_color">#808080</color>
     <color name="adaptive_text_color">#FF000000</color>
+    <color name="note_main_fragment_background_color">#F7F7F7</color>
+    <color name="note_add_edit_fragment_background_color">#FFFFFFFF</color>
+    <color name="teal_adaptive_color">#FF03DAC5</color>
+    <color name="separator_line_color">#CECECE</color>
+    <color name="radio_button_unchecked_color">#5B5B5B</color>
+    <color name="cancel_color">#F3511D</color>
 </resources>

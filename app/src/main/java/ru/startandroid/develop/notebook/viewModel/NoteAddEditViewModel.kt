@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.startandroid.develop.notebook.model.Note
 import ru.startandroid.develop.notebook.model.NoteDao
-import ru.startandroid.develop.notebook.utils.shortToast
 import javax.inject.Inject
 
 @HiltViewModel

@@ -4,10 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/drawable/ic_add.xml" value="0.428" />
+        <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/drawable/ic_dark_mode.xml" value="0.428" />
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/drawable/main_item_menu.xml" value="0.428" />
+        <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/drawable/your_add_delete.xml" value="0.428" />
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/activity_main.xml" value="0.36684782608695654" />
+        <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/dark_mode_chooser_dialog.xml" value="0.5" />
+        <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/dark_mode_chooser_dialog_layout.xml" value="0.55" />
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/note_add_edit_fragment.xml" value="0.36684782608695654" />
-        <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/note_item.xml" value="0.22192028985507245" />
+        <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/note_item.xml" value="0.5" />
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/layout/note_main_fragment.xml" value="0.36684782608695654" />
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/menu/main_menu.xml" value="0.55" />
         <entry key="..\:/Users/Baudi/AndroidStudioProjects/Notebook/app/src/main/res/menu/main_menu_popup.xml" value="0.55" />

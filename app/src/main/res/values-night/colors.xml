@@ -4,5 +4,9 @@
     <color name="adaptive_text_color">#FFFFFFFF</color>
     <color name="popup_menu_color">#FFFFFFFF</color>
     <color name="status_bar_color">#00675D</color>
-    <color name="toolbar_color">#FF000000</color>
+    <color name="toolbar_color">#303030</color>
+    <color name="note_main_fragment_background_color">#4C4C4C</color>
+    <color name="note_add_edit_fragment_background_color">#4C4C4C</color>
+    <color name="teal_adaptive_color">#396E68</color>
+    <color name="radio_button_unchecked_color">#CACACA</color>
 </resources>

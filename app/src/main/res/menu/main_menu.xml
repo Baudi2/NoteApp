@@ -13,12 +13,16 @@
         <menu>
 
             <item
-                android:id="@+id/menu_menu_delete"
+                android:id="@+id/main_menu_delete"
                 android:title="@string/delete_all_notes_menu"
                 android:icon="@drawable/your_add_delete"
                 app:showAsAction="never" />
+
+            <item
+                android:id="@+id/main_menu_dark_mode"
+                android:title="@string/dark_mode_main_menu"
+                android:icon="@drawable/ic_dark_mode"
+                app:showAsAction="never"/>
         </menu>
-
     </item>
-
 </menu>

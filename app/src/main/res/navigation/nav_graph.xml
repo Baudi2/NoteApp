@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_noteMainFragment_to_noteAddEditFragment"
             app:destination="@id/noteAddEditFragment" />
+        <action
+            android:id="@+id/action_noteMainFragment_to_darkModeChooserDialog"
+            app:destination="@id/darkModeChooserDialog" />
     </fragment>
     <fragment
         android:id="@+id/noteAddEditFragment"
@@ -33,4 +36,9 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+    <dialog
+        android:id="@+id/darkModeChooserDialog"
+        android:name="ru.startandroid.develop.notebook.view.DarkModeChooserDialog"
+        android:label="dark_mode_chooser_dialog"
+        tools:layout="@layout/dark_mode_chooser_dialog" />
 </navigation>

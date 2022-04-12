@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.startandroid.develop.notebook.model.Note
 import ru.startandroid.develop.notebook.model.NoteDao
-import ru.startandroid.develop.notebook.utils.shortToast
+import ru.startandroid.develop.notebook.utils.toast
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +26,7 @@ class NoteMainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.deleteAllNotes()
             withContext(Dispatchers.Main) {
-                shortToast("Все заметки удалены")
+                toast("Все заметки удалены")
             }
         }
     }
@@ -41,9 +41,6 @@ class NoteMainViewModel @Inject constructor(
         _showText.value = false
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)
-//            withContext(Dispatchers.Main) {
-//                _showText.value = true
-//            }
             _showText.postValue(true)
         }
     }

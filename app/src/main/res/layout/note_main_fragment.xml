@@ -10,14 +10,15 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/light_grey"
+        android:backgroundTint="@color/note_main_fragment_background_color"
         android:clipToPadding="false"
         android:padding="6dp"
-        tools:listitem="@layout/note_item"
-        android:background="@color/light_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/note_item" />
 
     <TextView
         android:id="@+id/no_active_notes"
@@ -25,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:text="@string/no_created_notes"
-        android:textColor="@color/black"
+        android:textColor="@color/adaptive_text_color"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +39,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:src="@drawable/ic_add"
+        app:backgroundTint="@color/teal_adaptive_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize="32dp"

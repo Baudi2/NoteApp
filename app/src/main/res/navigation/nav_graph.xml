@@ -40,5 +40,9 @@
         android:id="@+id/darkModeChooserDialog"
         android:name="ru.startandroid.develop.notebook.view.DarkModeChooserDialog"
         android:label="dark_mode_chooser_dialog"
-        tools:layout="@layout/dark_mode_chooser_dialog" />
+        tools:layout="@layout/dark_mode_chooser_dialog" >
+        <argument
+            android:name="appThemeMode"
+            app:argType="ru.startandroid.develop.notebook.utils.AppThemeModes" />
+    </dialog>
 </navigation>

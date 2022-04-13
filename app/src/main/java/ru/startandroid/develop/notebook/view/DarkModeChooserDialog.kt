@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.navArgs
 import ru.startandroid.develop.notebook.databinding.DarkModeChooserDialogBinding
 import ru.startandroid.develop.notebook.utils.AppThemeModes
 
@@ -26,6 +27,7 @@ class DarkModeChooserDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        setPreselectedRadioButton()
     }
 
     override fun onDestroyView() {
@@ -39,6 +41,15 @@ class DarkModeChooserDialog : DialogFragment() {
                 darkModeChooserCancelButton.setOnClickListener { dismiss() }
                 darkModeChooserApplyButton.setOnClickListener { getSelectedMode() }
             }
+        }
+    }
+
+    private fun setPreselectedRadioButton() {
+        val args: DarkModeChooserDialogArgs by navArgs()
+        when (args.appThemeMode) {
+            AppThemeModes.DARK_MODE -> binding?.darkModeChooserDarkModeButton?.isChecked = true
+            AppThemeModes.LIGHT_MODE -> binding?.darkModeChooserLightModeButton?.isChecked = true
+            AppThemeModes.SYSTEM_ADAPT -> binding?.darkModeChooserSystemAdaptButton?.isChecked = true
         }
     }
 

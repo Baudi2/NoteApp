@@ -1,6 +1,7 @@
 package ru.startandroid.develop.notebook.view
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -105,7 +106,15 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
     }
 
     private fun showDarkModeDialog() {
-        val action = NoteMainFragmentDirections.actionNoteMainFragmentToDarkModeChooserDialog()
+        val currentAppTheme =
+            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val currentMode = when (currentAppTheme) {
+            Configuration.UI_MODE_NIGHT_YES -> AppThemeModes.DARK_MODE
+            Configuration.UI_MODE_NIGHT_NO -> AppThemeModes.LIGHT_MODE
+            else -> AppThemeModes.SYSTEM_ADAPT //TODO: get adapt system from prefs
+        }
+        val action =
+            NoteMainFragmentDirections.actionNoteMainFragmentToDarkModeChooserDialog(currentMode)
         findNavController().navigate(action)
     }
 
@@ -123,6 +132,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
     }
 
     private fun changeAppMode(mode: AppThemeModes) {
+        viewModel.saveUserSelectedThemeMode(mode)
         when (mode) {
             AppThemeModes.DARK_MODE -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             AppThemeModes.LIGHT_MODE -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

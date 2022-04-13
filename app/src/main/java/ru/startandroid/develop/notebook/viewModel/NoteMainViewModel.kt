@@ -8,12 +8,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.startandroid.develop.notebook.model.Note
 import ru.startandroid.develop.notebook.model.NoteDao
+import ru.startandroid.develop.notebook.sharedpreferences.PreferenceHelper
+import ru.startandroid.develop.notebook.sharedpreferences.SharedPreferencesKeys.USER_SELECTED_THEME_MODE_KEY
+import ru.startandroid.develop.notebook.utils.AppThemeModes
 import ru.startandroid.develop.notebook.utils.toast
 import javax.inject.Inject
 
 @HiltViewModel
 class NoteMainViewModel @Inject constructor(
-    private val noteDao: NoteDao
+    private val noteDao: NoteDao,
+    private val preferences: PreferenceHelper
 ) : ViewModel() {
 
     val notes = noteDao.getNotes().asLiveData()
@@ -43,5 +47,9 @@ class NoteMainViewModel @Inject constructor(
             delay(400)
             _showText.postValue(true)
         }
+    }
+
+    fun saveUserSelectedThemeMode(mode: AppThemeModes) {
+        preferences.saveString(USER_SELECTED_THEME_MODE_KEY, mode.name)
     }
 }

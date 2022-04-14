@@ -8,8 +8,7 @@
     android:layout_marginEnd="4dp"
     android:layout_marginBottom="8dp"
     android:foreground="@drawable/custom_ripple"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="8dp">
+    app:cardCornerRadius="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="200dp"
@@ -28,7 +27,7 @@
             android:ellipsize="end"
             android:maxLength="20"
             android:maxLines="1"
-            android:textColor="@color/black"
+            android:textColor="@color/adaptive_text_color"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +69,4 @@
             app:srcCompat="@drawable/main_item_menu"
             tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </androidx.cardview.widget.CardView>

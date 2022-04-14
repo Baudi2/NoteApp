@@ -29,14 +29,14 @@ class NoteAdapter(
         init {
             with(binding) {
                 root.setOnClickListener {
-                    val position = adapterPosition
+                    val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         val note = getItem(position)
                         listener.onItemClick(note)
                     }
                 }
                 menuDeleteImportantItem.setOnClickListener {
-                    val position = adapterPosition
+                    val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         val note = getItem(position)
                         listener.onPopupClick(note, it)

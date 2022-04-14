@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".view.NoteAddEditFragment">
+    tools:context=".view.NoteAddEditFragment"
+    android:background="@color/note_add_edit_fragment_background_color">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,7 +20,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:hint="@string/header_edit_text"
-            android:textColor="@color/black"
+            android:textColor="@color/adaptive_text_color"
+            android:textColorHint="@color/edit_text_hint_color"
             android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textSize="20sp"
-            android:textColor="@color/black"
+            android:textColor="@color/adaptive_text_color"
+            android:textColorHint="@color/edit_text_hint_color"
             android:hint="@string/start_typing_hint"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"

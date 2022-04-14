@@ -5,4 +5,13 @@
     <string name="start_typing_hint">Начните писать</string>
     <string name="delete_all_notes_menu">Удалить все</string>
     <string name="menu_delete_note">Удалить</string>
+    <string name="dark_mode_main_menu">Поменять тему</string>
+    <string name="apply">Применить</string>
+    <string name="cancel">Отмена</string>
+
+    <!-- Dark Mode Chooser Dialog Strings -->
+    <string name="dark_mode_chooser_title">Выберите тему для приложения</string>
+    <string name="dark_mode_chooser_dark_theme">Темная тема</string>
+    <string name="dark_mode_chooser_light_theme">Светлая тема</string>
+    <string name="dark_mode_chooser_system_adapt">Адаптироваться под систему</string>
 </resources>

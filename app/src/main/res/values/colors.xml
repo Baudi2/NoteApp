@@ -19,4 +19,5 @@
     <color name="separator_line_color">#CECECE</color>
     <color name="radio_button_unchecked_color">#5B5B5B</color>
     <color name="cancel_color">#F3511D</color>
+    <color name="icon_fill_color">#A9A9A9</color>
 </resources>

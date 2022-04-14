@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,45 +8,36 @@
     tools:context=".view.NoteAddEditFragment"
     android:background="@color/note_add_edit_fragment_background_color">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="@dimen/size_16">
 
         <EditText
-            android:id="@+id/editText_header"
+            android:id="@+id/note_add_edit_edit_text_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
             android:hint="@string/header_edit_text"
             android:textColor="@color/adaptive_text_color"
             android:textColorHint="@color/edit_text_hint_color"
-            android:textSize="26sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="@dimen/text_26"
             android:inputType="textCapSentences|textMultiLine"
             tools:ignore="Autofill" />
 
         <EditText
-            android:paddingBottom="16dp"
-            android:id="@+id/desc_edit_text"
+            android:paddingBottom="@dimen/size_64"
+            android:id="@+id/note_add_edit_desc_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"
+            android:layout_marginTop="@dimen/size_16"
+            android:textSize="@dimen/text_20"
             android:textColor="@color/adaptive_text_color"
             android:textColorHint="@color/edit_text_hint_color"
             android:hint="@string/start_typing_hint"
             android:background="@null"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText_header"
             android:inputType="textCapSentences|textMultiLine"
             tools:ignore="Autofill" />
-
-        
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </ScrollView>

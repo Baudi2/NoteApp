@@ -1,7 +1,6 @@
 package ru.startandroid.develop.notebook.view
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -89,7 +88,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
                 true
             }
             R.id.main_menu_dark_mode -> {
-                showDarkModeDialog()
+                getCurrentAppThemeMode()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -105,16 +104,19 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
         viewModel.delayedShowNoActiveNotes()
     }
 
-    private fun showDarkModeDialog() {
-        val currentAppTheme =
-            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val currentMode = when (currentAppTheme) {
-            Configuration.UI_MODE_NIGHT_YES -> AppThemeModes.DARK_MODE
-            Configuration.UI_MODE_NIGHT_NO -> AppThemeModes.LIGHT_MODE
-            else -> AppThemeModes.SYSTEM_ADAPT //TODO: get adapt system from prefs
+    private fun getCurrentAppThemeMode() {
+        viewModel.getUserSavedThemeMode()
+        viewModel.currentMode.observe(viewLifecycleOwner) {
+            if (it != null) {
+                showDarkModeDialog(it)
+                viewModel.currentMode.value = null
+            }
         }
-        val action =
-            NoteMainFragmentDirections.actionNoteMainFragmentToDarkModeChooserDialog(currentMode)
+    }
+
+    private fun showDarkModeDialog(mode: AppThemeModes) {
+        val action = NoteMainFragmentDirections
+            .actionNoteMainFragmentToDarkModeChooserDialog(mode)
         findNavController().navigate(action)
     }
 
@@ -149,15 +151,14 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
         optionsMenu.setForceShowIcon(true)
 
         menuBuilder.setCallback((object : MenuBuilder.Callback {
-            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
-                return when (item.itemId) {
+            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem)=
+                when (item.itemId) {
                     menuItemId -> {
                         toast(message)
                         viewModel.deleteSingleNote(note)
                         true
                     }
                     else -> false
-                }
             }
 
             override fun onMenuModeChange(menu: MenuBuilder) {}

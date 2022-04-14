@@ -1,5 +1,6 @@
 package ru.startandroid.develop.notebook.viewModel
 
+import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,8 @@ class NoteMainViewModel @Inject constructor(
     val showText: LiveData<Boolean>
         get() = _showText
 
+    val currentMode = MutableLiveData<AppThemeModes>()
+
     fun deleteAllNotesFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.deleteAllNotes()
@@ -51,5 +54,14 @@ class NoteMainViewModel @Inject constructor(
 
     fun saveUserSelectedThemeMode(mode: AppThemeModes) {
         preferences.saveString(USER_SELECTED_THEME_MODE_KEY, mode.name)
+    }
+
+    fun getUserSavedThemeMode() {
+        val mode = when (preferences.getString(USER_SELECTED_THEME_MODE_KEY)) {
+            AppThemeModes.LIGHT_MODE.name -> AppThemeModes.LIGHT_MODE
+            AppThemeModes.DARK_MODE.name -> AppThemeModes.DARK_MODE
+            else -> AppThemeModes.SYSTEM_ADAPT
+        }
+        currentMode.postValue(mode)
     }
 }

@@ -14,12 +14,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object LocalDBModule {
 
     @Provides
     @Singleton
     fun provideDatabase(app: Application) =
-        Room.databaseBuilder(app, NoteDatabase::class.java, "note_database")
+        Room.databaseBuilder(app, NoteDatabase::class.java, NOTE_DATABASE_NAME)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -27,5 +27,8 @@ object AppModule {
     fun provideNoteDao(db: NoteDatabase) = db.noteDao()
 
     @Provides
+    @Singleton
     fun providePreferenceHelperImpl(app: Application) = PreferenceHelperImpl(app)
+
+    private const val NOTE_DATABASE_NAME = "note_database"
 }

@@ -7,18 +7,17 @@ import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
-import ru.startandroid.develop.notebook.model.Note
+import ru.startandroid.develop.notebook.model.NoteEntity
 import ru.startandroid.develop.notebook.viewModel.NoteAddEditViewModel
 
 @AndroidEntryPoint
 class NoteAddEditFragment : Fragment(R.layout.note_add_edit_fragment) {
+
     private lateinit var binding: NoteAddEditFragmentBinding
     private val args: NoteAddEditFragmentArgs by navArgs()
     private val viewModel by viewModels<NoteAddEditViewModel>()
@@ -35,8 +34,8 @@ class NoteAddEditFragment : Fragment(R.layout.note_add_edit_fragment) {
         if (args.note != null) {
             val note = args.note
             with(binding) {
-                editTextHeader.setText(note!!.header)
-                descEditText.setText(note.description)
+                noteAddEditEditTextHeader.setText(note!!.header)
+                noteAddEditDescEditText.setText(note.description)
             }
         }
     }
@@ -67,17 +66,17 @@ class NoteAddEditFragment : Fragment(R.layout.note_add_edit_fragment) {
     }
 
     private fun saveItem() {
-        val header = binding.editTextHeader.text.toString()
-        val desc = binding.descEditText.text.toString()
+        val header = binding.noteAddEditEditTextHeader.text.toString()
+        val desc = binding.noteAddEditDescEditText.text.toString()
         viewModel.insertItem(header, desc)
     }
 
     private fun updateNote() {
         val note = args.note
         val id = note!!.id
-        val header = binding.editTextHeader.text.toString()
-        val description = binding.descEditText.text.toString()
-        val editedNote = Note(id = id, header = header, description = description)
+        val header = binding.noteAddEditEditTextHeader.text.toString()
+        val description = binding.noteAddEditDescEditText.text.toString()
+        val editedNote = NoteEntity(id = id, header = header, description = description)
         viewModel.updatedItem(editedNote)
     }
 }

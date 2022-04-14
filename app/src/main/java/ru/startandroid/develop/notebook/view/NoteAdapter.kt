@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.startandroid.develop.notebook.databinding.NoteItemBinding
-import ru.startandroid.develop.notebook.model.Note
+import ru.startandroid.develop.notebook.model.NoteEntity
 
 class NoteAdapter(
     private val listener: OnItemClickListener
-) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(DiffCallback()) {
+) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -35,7 +35,7 @@ class NoteAdapter(
                         listener.onItemClick(note)
                     }
                 }
-                menuDeleteImportantItem.setOnClickListener {
+                noteItemSelectedItemMenu.setOnClickListener {
                     val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         val note = getItem(position)
@@ -45,25 +45,25 @@ class NoteAdapter(
             }
         }
 
-        fun bind(note: Note) {
+        fun bind(note: NoteEntity) {
             with(binding) {
-                headerTextView.text = note.header
-                descTextView.text = note.description
-                timeStamp.text = note.createdDateFormatted
+                noteItemHeaderTextView.text = note.header
+                noteItemDescTextView.text = note.description
+                noteItemTimeStamp.text = note.createdDateFormatted
             }
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<Note>() {
-        override fun areItemsTheSame(oldItem: Note, newItem: Note) =
+    class DiffCallback : DiffUtil.ItemCallback<NoteEntity>() {
+        override fun areItemsTheSame(oldItem: NoteEntity, newItem: NoteEntity) =
             oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: Note, newItem: Note) =
+        override fun areContentsTheSame(oldItem: NoteEntity, newItem: NoteEntity) =
             oldItem == newItem
     }
 
     interface OnItemClickListener {
-        fun onItemClick(note: Note)
-        fun onPopupClick(note: Note, view: View)
+        fun onItemClick(note: NoteEntity)
+        fun onPopupClick(note: NoteEntity, view: View)
     }
 }

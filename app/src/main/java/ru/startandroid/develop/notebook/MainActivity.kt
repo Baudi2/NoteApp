@@ -11,9 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.databinding.ActivityMainBinding
 import ru.startandroid.develop.notebook.sharedpreferences.PreferenceHelper
 import ru.startandroid.develop.notebook.sharedpreferences.SharedPreferencesKeys.USER_SELECTED_THEME_MODE_KEY
-import ru.startandroid.develop.notebook.utils.APP_ACTIVITY
 import ru.startandroid.develop.notebook.utils.AppThemeModes
-import ru.startandroid.develop.notebook.utils.toast
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,8 +27,6 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        APP_ACTIVITY = this
 
         val toolbar = binding.mainToolbar
 

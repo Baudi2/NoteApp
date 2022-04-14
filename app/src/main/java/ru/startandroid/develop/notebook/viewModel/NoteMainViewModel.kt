@@ -1,18 +1,16 @@
 package ru.startandroid.develop.notebook.viewModel
 
-import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.startandroid.develop.notebook.model.Note
+import ru.startandroid.develop.notebook.model.NoteEntity
 import ru.startandroid.develop.notebook.model.NoteDao
 import ru.startandroid.develop.notebook.sharedpreferences.PreferenceHelper
 import ru.startandroid.develop.notebook.sharedpreferences.SharedPreferencesKeys.USER_SELECTED_THEME_MODE_KEY
 import ru.startandroid.develop.notebook.utils.AppThemeModes
-import ru.startandroid.develop.notebook.utils.toast
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,12 +31,12 @@ class NoteMainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.deleteAllNotes()
             withContext(Dispatchers.Main) {
-                toast("Все заметки удалены")
+//                toast("Все заметки удалены")
             }
         }
     }
 
-    fun deleteSingleNote(note: Note) {
+    fun deleteSingleNote(note: NoteEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.delete(note)
         }

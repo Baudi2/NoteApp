@@ -16,9 +16,7 @@ class DarkModeChooserDialog : DialogFragment() {
     private var binding: DarkModeChooserDialogBinding? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = DarkModeChooserDialogBinding.inflate(inflater, container, false)
         return binding?.root

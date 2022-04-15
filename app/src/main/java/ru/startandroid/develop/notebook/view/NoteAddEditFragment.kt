@@ -1,10 +1,7 @@
 package ru.startandroid.develop.notebook.view
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -13,31 +10,29 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.model.NoteEntity
+import ru.startandroid.develop.notebook.utils.toast
 import ru.startandroid.develop.notebook.viewModel.NoteAddEditViewModel
 
 @AndroidEntryPoint
-class NoteAddEditFragment : Fragment(R.layout.note_add_edit_fragment) {
+class NoteAddEditFragment : Fragment() {
 
-    private lateinit var binding: NoteAddEditFragmentBinding
+    private var binding: NoteAddEditFragmentBinding? = null
+
     private val args: NoteAddEditFragmentArgs by navArgs()
+
     private val viewModel by viewModels<NoteAddEditViewModel>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        binding = NoteAddEditFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = NoteAddEditFragmentBinding.bind(view)
-
         setHasOptionsMenu(true)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (args.note != null) {
-            val note = args.note
-            with(binding) {
-                noteAddEditEditTextHeader.setText(note!!.header)
-                noteAddEditDescEditText.setText(note.description)
-            }
-        }
+        initViews()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -45,38 +40,84 @@ class NoteAddEditFragment : Fragment(R.layout.note_add_edit_fragment) {
         inflater.inflate(R.menu.menu_add_edit, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
             R.id.noteMainFragment -> {
-                if (args.note == null) {
-                    saveItem()
-                    val action =
-                        NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
-                    findNavController().navigate(action)
-                } else {
-                    updateNote()
-                    val action =
-                        NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
-                    findNavController().navigate(action)
-                }
+                val note = args.note
+                if (note != null) updateNote(note.id)
+                else saveItem()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
+    private fun initViews() {
+        binding?.let { binding ->
+            with(binding) {
+                args.note?.let { note ->
+                    noteAddEditEditTextHeader.setText(note.header)
+                    noteAddEditDescEditText.setText(note.description)
+                }
+            }
+        }
     }
 
     private fun saveItem() {
-        val header = binding.noteAddEditEditTextHeader.text.toString()
-        val desc = binding.noteAddEditDescEditText.text.toString()
-        viewModel.insertItem(header, desc)
+        if (validateInputFields()) {
+            viewModel.insertItem(
+                NoteEntity(
+                    header = binding?.noteAddEditEditTextHeader?.text.toString(),
+                    description = binding?.noteAddEditDescEditText?.text.toString()
+                )
+            )
+            val action =
+                NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
+            findNavController().navigate(action)
+        }
     }
 
-    private fun updateNote() {
-        val note = args.note
-        val id = note!!.id
-        val header = binding.noteAddEditEditTextHeader.text.toString()
-        val description = binding.noteAddEditDescEditText.text.toString()
-        val editedNote = NoteEntity(id = id, header = header, description = description)
-        viewModel.updatedItem(editedNote)
+    private fun updateNote(noteId: Int) {
+        if (validateInputFields()) {
+            viewModel.updatedItem(
+                NoteEntity(
+                    id = noteId,
+                    header = binding?.noteAddEditEditTextHeader?.text.toString(),
+                    description = binding?.noteAddEditDescEditText?.text.toString()
+                )
+            )
+            val action =
+                NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun validateInputFields(): Boolean {
+        binding?.let { binding ->
+            with(binding) {
+                if (noteAddEditEditTextHeader.text.trim()
+                        .isEmpty() && noteAddEditDescEditText.text.trim().isEmpty()
+                ) {
+                    requireContext().toast(
+                        getString(R.string.empty_header_and_description_error_message),
+                        true
+                    )
+                    return false
+                }
+                if (noteAddEditEditTextHeader.text.trim().isEmpty()) {
+                    requireContext().toast(getString(R.string.empty_header_error_message), true)
+                    return false
+                }
+                if (noteAddEditDescEditText.text.trim().isEmpty()) {
+                    requireContext().toast(getString(R.string.empty_desc_error_message), true)
+                    return false
+                }
+            }
+        }
+        return true
     }
 }

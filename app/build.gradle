@@ -75,4 +75,7 @@ dependencies {
 
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$livedata_version"
+
+    // LifeCycle Scope
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 }

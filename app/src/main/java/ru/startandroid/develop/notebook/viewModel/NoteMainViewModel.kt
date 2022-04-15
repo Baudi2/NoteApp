@@ -4,6 +4,10 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.startandroid.develop.notebook.model.NoteEntity
@@ -19,20 +23,20 @@ class NoteMainViewModel @Inject constructor(
     private val preferences: PreferenceHelper
 ) : ViewModel() {
 
-    val notes = noteDao.getNotes().asLiveData()
+    private val _notesState = MutableStateFlow<List<NoteEntity>?>(null)
+    val notesState: StateFlow<List<NoteEntity>?> = _notesState.asStateFlow()
 
-    private val _showText = MutableLiveData<Boolean>()
-    val showText: LiveData<Boolean>
-        get() = _showText
+    val currentMode: MutableStateFlow<AppThemeModes?> = MutableStateFlow(null)
 
-    val currentMode = MutableLiveData<AppThemeModes>()
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            _notesState.emitAll(noteDao.getNotes())
+        }
+    }
 
     fun deleteAllNotesFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             noteDao.deleteAllNotes()
-            withContext(Dispatchers.Main) {
-//                toast("Все заметки удалены")
-            }
         }
     }
 
@@ -42,24 +46,18 @@ class NoteMainViewModel @Inject constructor(
         }
     }
 
-    fun delayedShowNoActiveNotes() {
-        _showText.value = false
-        viewModelScope.launch(Dispatchers.IO) {
-            delay(400)
-            _showText.postValue(true)
-        }
-    }
-
     fun saveUserSelectedThemeMode(mode: AppThemeModes) {
         preferences.saveString(USER_SELECTED_THEME_MODE_KEY, mode.name)
     }
 
     fun getUserSavedThemeMode() {
-        val mode = when (preferences.getString(USER_SELECTED_THEME_MODE_KEY)) {
+        val mode =  when (preferences.getString(USER_SELECTED_THEME_MODE_KEY)) {
             AppThemeModes.LIGHT_MODE.name -> AppThemeModes.LIGHT_MODE
             AppThemeModes.DARK_MODE.name -> AppThemeModes.DARK_MODE
             else -> AppThemeModes.SYSTEM_ADAPT
         }
-        currentMode.postValue(mode)
+        viewModelScope.launch(Dispatchers.IO) {
+            currentMode.emit(mode)
+        }
     }
 }

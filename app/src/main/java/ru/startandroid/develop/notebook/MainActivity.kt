@@ -20,29 +20,32 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var preference: PreferenceHelper
 
-    private lateinit var navController: NavController
+    private var navController: NavController? = null
+
+    private var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding?.root)
 
-        val toolbar = binding.mainToolbar
-
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
-        navController = navHostFragment.findNavController()
-
-        setSupportActionBar(toolbar)
-        setupActionBarWithNavController(navController)
+        setupNavigation()
 
         val appThemeMode = preference.getString(USER_SELECTED_THEME_MODE_KEY)
         if (appThemeMode != null) setupUserSavedAppMode(appThemeMode)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        return navController?.navigateUp() ?: false || super.onSupportNavigateUp()
+    }
+
+    private fun setupNavigation() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+        navController = navHostFragment.findNavController()
+
+        setSupportActionBar(binding?.mainToolbar)
+        setupActionBarWithNavController(navController ?: return)
     }
 
     private fun setupUserSavedAppMode(mode: String) {

@@ -2,20 +2,23 @@ package ru.startandroid.develop.notebook.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
 import ru.startandroid.develop.notebook.model.NoteEntity
@@ -23,57 +26,49 @@ import ru.startandroid.develop.notebook.utils.AppThemeModes
 import ru.startandroid.develop.notebook.utils.toast
 import ru.startandroid.develop.notebook.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
 import ru.startandroid.develop.notebook.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
+import ru.startandroid.develop.notebook.view.noteadapter.NoteAdapter
+import ru.startandroid.develop.notebook.view.noteadapter.NoteItemClickListener
 import ru.startandroid.develop.notebook.viewModel.NoteMainViewModel
 
 @AndroidEntryPoint
-class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnItemClickListener {
+class NoteMainFragment : Fragment(), NoteItemClickListener {
 
-    private lateinit var binding: NoteMainFragmentBinding
+    private var binding: NoteMainFragmentBinding? = null
+
     private val viewModel by viewModels<NoteMainViewModel>()
+
+    private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        binding = NoteMainFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = NoteMainFragmentBinding.bind(view)
-
         setHasOptionsMenu(true)
-
-
-        val adapter = NoteAdapter(this)
-        val layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
-
-        with(binding) {
-            noteMainFabAddNote.setOnClickListener {
-                navigateToAdd()
-            }
-            noteMainRecyclerView.adapter = adapter
-            noteMainRecyclerView.layoutManager = layoutManager
-            noteMainRecyclerView.setHasFixedSize(true)
-        }
-
-        viewModel.notes.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                binding.noteMainNoCreatedNotes.visibility = View.GONE
-            }
-            adapter.submitList(it)
-        }
-
+        initViews()
+        collectNotes()
+        initRecyclerView()
         modeChooserResultListener()
-    }
-
-    private fun navigateToAdd() {
-        val action =
-            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment("Создать заметку")
-        findNavController().navigate(action)
     }
 
     override fun onItemClick(note: NoteEntity) {
         val action =
-            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment("Изменить", note)
+            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(
+                getString(R.string.change), note
+            )
         findNavController().navigate(action)
     }
 
     override fun onPopupClick(note: NoteEntity, view: View) {
-        showPopup(view, R.menu.main_menu_popup, "Заметка удалена", R.id.delete_one_item, note)
+        showPopup(
+            view, R.menu.main_menu_popup,
+            getString(R.string.note_was_deleted), R.id.delete_one_item, note
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -84,7 +79,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             R.id.main_menu_delete -> {
-                deleteAllNotes()
+                displayDeleteAllNotesDialog()
                 true
             }
             R.id.main_menu_dark_mode -> {
@@ -94,22 +89,83 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
             else -> super.onOptionsItemSelected(item)
         }
 
-    private fun deleteAllNotes() {
-        viewModel.deleteAllNotesFromDb()
-        viewModel.showText.observe(viewLifecycleOwner) {
-            if (it == true) {
-                binding.noteMainNoCreatedNotes.visibility = View.VISIBLE
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.notesState.collect {
+                    menu.findItem(R.id.main_menu_delete).isEnabled = it?.isNotEmpty() == true
+                }
             }
         }
-        viewModel.delayedShowNoActiveNotes()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
+    private fun initViews() {
+        binding?.let { binding ->
+            with(binding) {
+                noteMainFabAddNote.setOnClickListener {
+                    navigateToAdd()
+                }
+            }
+        }
+    }
+
+    private fun initRecyclerView() {
+        binding?.noteMainRecyclerView?.apply {
+            adapter = noteAdapter
+            layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
+            setHasFixedSize(true)
+        }
+    }
+
+    private fun collectNotes() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.notesState.collect { displayNotes(it) }
+            }
+        }
+    }
+
+    private fun displayNotes(notes: List<NoteEntity>?) {
+        if (notes != null) {
+            // TODO: this text blinks when adding new item & when updating item and opening the app
+            binding?.noteMainNoCreatedNotes?.isVisible = notes.isEmpty()
+            noteAdapter.submitList(notes)
+        }
+    }
+
+    private fun navigateToAdd() {
+        val action =
+            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(getString(R.string.create_a_note))
+        findNavController().navigate(action)
+    }
+
+    private fun displayDeleteAllNotesDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.attention))
+            .setMessage(getString(R.string.confirm_delete_all_notes_message))
+            .setPositiveButton(getString(R.string.delete_all_notes)) { _, _ ->
+                viewModel.deleteAllNotesFromDb()
+                requireContext().toast(getString(R.string.all_notes_were_deleted))
+            }.setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .show()
     }
 
     private fun getCurrentAppThemeMode() {
         viewModel.getUserSavedThemeMode()
-        viewModel.currentMode.observe(viewLifecycleOwner) {
-            if (it != null) {
-                showDarkModeDialog(it)
-                viewModel.currentMode.value = null
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentMode.collect { mode ->
+                    if (mode != null) {
+                        showDarkModeDialog(mode)
+                        viewModel.currentMode.value = null
+                    }
+                }
             }
         }
     }
@@ -143,15 +199,15 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
     }
 
     @SuppressLint("RestrictedApi")
-    private fun showPopup(view: View, menu: Int, message: String, menuItemId: Int, note: NoteEntity) {
+    private fun showPopup(
+        view: View, menu: Int, message: String, menuItemId: Int, note: NoteEntity
+    ) {
         val menuBuilder = MenuBuilder(requireContext())
-        val menuInflater = MenuInflater(requireContext())
-        menuInflater.inflate(menu, menuBuilder)
+        MenuInflater(requireContext()).inflate(menu, menuBuilder)
         val optionsMenu = MenuPopupHelper(requireContext(), menuBuilder, view)
         optionsMenu.setForceShowIcon(true)
-
         menuBuilder.setCallback((object : MenuBuilder.Callback {
-            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem)=
+            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem) =
                 when (item.itemId) {
                     menuItemId -> {
                         requireContext().toast(message)
@@ -159,7 +215,7 @@ class NoteMainFragment : Fragment(R.layout.note_main_fragment), NoteAdapter.OnIt
                         true
                     }
                     else -> false
-            }
+                }
 
             override fun onMenuModeChange(menu: MenuBuilder) {}
         }))

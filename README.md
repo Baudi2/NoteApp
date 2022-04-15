@@ -11,7 +11,7 @@
 
 ● Navigation Component
 
-● Coroutines
+● Coroutines & Flow
 
 ● Room DB
 

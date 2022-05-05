@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/note_add_edit_fragment_background_color"
-        tools:context=".view.DarkModeChooserDialog">
+        tools:context=".screens.main.ui.view.DarkModeChooserDialog">
 
         <TextView
             android:id="@+id/dark_mode_chooser_title_text_view"

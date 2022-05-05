@@ -1,15 +1,13 @@
 package ru.startandroid.develop.notebook.di
 
 import android.app.Application
-import android.content.Context
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.startandroid.develop.notebook.model.NoteDatabase
-import ru.startandroid.develop.notebook.sharedpreferences.PreferenceHelperImpl
+import ru.startandroid.develop.notebook.data.db.NoteDatabase
+import ru.startandroid.develop.notebook.data.sharedpreferences.PreferenceHelperImpl
 import javax.inject.Singleton
 
 @Module
@@ -20,7 +18,6 @@ object LocalDBModule {
     @Singleton
     fun provideDatabase(app: Application) =
         Room.databaseBuilder(app, NoteDatabase::class.java, NOTE_DATABASE_NAME)
-            .fallbackToDestructiveMigration()
             .build()
 
     @Provides

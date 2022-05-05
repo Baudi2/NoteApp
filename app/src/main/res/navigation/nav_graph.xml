@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/noteMainFragment"
-        android:name="ru.startandroid.develop.notebook.view.NoteMainFragment"
+        android:name="ru.startandroid.develop.notebook.screens.main.ui.view.NoteMainFragment"
         android:label="Записки"
         tools:layout="@layout/note_main_fragment" >
         <action
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/noteAddEditFragment"
-        android:name="ru.startandroid.develop.notebook.view.NoteAddEditFragment"
+        android:name="ru.startandroid.develop.notebook.screens.addedit.ui.view.NoteAddEditFragment"
         android:label="{isAdd}"
         tools:layout="@layout/note_add_edit_fragment">
         <action
@@ -32,17 +32,16 @@
             app:argType="string" />
         <argument
             android:name="note"
-            app:argType="ru.startandroid.develop.notebook.model.NoteEntity"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:argType="ru.startandroid.develop.notebook.screens.global.model.NoteUiModel"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/darkModeChooserDialog"
-        android:name="ru.startandroid.develop.notebook.view.DarkModeChooserDialog"
+        android:name="ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog"
         android:label="dark_mode_chooser_dialog"
         tools:layout="@layout/dark_mode_chooser_dialog" >
         <argument
             android:name="appThemeMode"
-            app:argType="ru.startandroid.develop.notebook.utils.AppThemeModes" />
+            app:argType="ru.startandroid.develop.notebook.core.AppThemeModes" />
     </dialog>
 </navigation>

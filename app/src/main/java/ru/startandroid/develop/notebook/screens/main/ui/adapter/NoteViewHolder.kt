@@ -1,15 +1,15 @@
 package ru.startandroid.develop.notebook.screens.main.ui.adapter
 
 import androidx.recyclerview.widget.RecyclerView
-import ru.startandroid.develop.notebook.data.enitities.NoteEntity
 import ru.startandroid.develop.notebook.databinding.NoteItemBinding
+import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 
 class NoteViewHolder(
     private val binding: NoteItemBinding,
     private val listener: NoteItemClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(note: NoteEntity) {
+    fun bind(note: NoteUiModel) {
         with(binding) {
             noteItemHeaderTextView.text = note.header
             noteItemDescTextView.text = note.description

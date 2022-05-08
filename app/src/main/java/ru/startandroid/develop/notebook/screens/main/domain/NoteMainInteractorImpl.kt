@@ -8,7 +8,7 @@ class NoteMainInteractorImpl(private val repository: NoteRepository) : NoteMainI
     override fun getAllNotes() = repository.getNotes()
 
     override suspend fun deleteNote(note: NoteDomainModel) {
-//        repository.deleteNote(note)
+        repository.deleteNote(note)
     }
 
     override suspend fun deleteAllNotes() {

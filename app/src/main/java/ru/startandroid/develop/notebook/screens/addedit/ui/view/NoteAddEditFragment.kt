@@ -8,10 +8,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.R
-import ru.startandroid.develop.notebook.core.toast
-import ru.startandroid.develop.notebook.data.enitities.NoteEntity
+import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.screens.addedit.ui.presentation.NoteAddEditViewModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 
 @AndroidEntryPoint
 class NoteAddEditFragment : Fragment() {
@@ -44,7 +44,7 @@ class NoteAddEditFragment : Fragment() {
         when (item.itemId) {
             R.id.noteMainFragment -> {
                 val note = args.note
-                if (note != null) updateNote(note.id)
+                if (note != null) updateNote(note)
                 else saveItem()
                 true
             }
@@ -70,9 +70,12 @@ class NoteAddEditFragment : Fragment() {
     private fun saveItem() {
         if (validateInputFields()) {
             viewModel.insertItem(
-                NoteEntity(
+                NoteUiModel(
+                    id = null,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
-                    description = binding?.noteAddEditDescEditText?.text.toString()
+                    description = binding?.noteAddEditDescEditText?.text.toString(),
+                    timeStamp = null,
+                    createdDateFormatted = null
                 )
             )
             val action =
@@ -81,13 +84,15 @@ class NoteAddEditFragment : Fragment() {
         }
     }
 
-    private fun updateNote(noteId: Int) {
+    private fun updateNote(note: NoteUiModel) {
         if (validateInputFields()) {
             viewModel.updatedItem(
-                NoteEntity(
-                    id = noteId,
+                NoteUiModel(
+                    id = note.id,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
-                    description = binding?.noteAddEditDescEditText?.text.toString()
+                    description = binding?.noteAddEditDescEditText?.text.toString(),
+                    timeStamp = note.timeStamp,
+                    createdDateFormatted = note.createdDateFormatted
                 )
             )
             val action =

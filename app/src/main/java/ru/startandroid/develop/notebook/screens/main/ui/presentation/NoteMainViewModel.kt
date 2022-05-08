@@ -4,16 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.core.AppThemeModes
-import ru.startandroid.develop.notebook.data.db.NoteDao
-import ru.startandroid.develop.notebook.data.enitities.NoteEntity
-import ru.startandroid.develop.notebook.data.sharedpreferences.PreferenceHelper
 import ru.startandroid.develop.notebook.data.sharedpreferences.SharedPreferencesKeys.USER_SELECTED_THEME_MODE_KEY
+import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
+import ru.startandroid.develop.notebook.screens.global.converter.toDomain
+import ru.startandroid.develop.notebook.screens.global.converter.toUi
+import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 import ru.startandroid.develop.notebook.screens.main.domain.NoteMainInteractor
 import javax.inject.Inject
 
@@ -22,35 +20,36 @@ class NoteMainViewModel @Inject constructor(
     private val interactor: NoteMainInteractor
 ) : ViewModel() {
 
-    private val _notesState = MutableStateFlow<List<NoteEntity>?>(null)
-    val notesState: StateFlow<List<NoteEntity>?> = _notesState.asStateFlow()
+    private val _notesState = MutableStateFlow<List<NoteUiModel>?>(null)
+    val notesState: StateFlow<List<NoteUiModel>?> = _notesState.asStateFlow()
 
     val currentMode: MutableStateFlow<AppThemeModes?> = MutableStateFlow(null)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _notesState.emitAll(interactor.getAllNotes())
+            val flowUiNotes = interactor.getAllNotes().flatMapConcat { mapAllNotes(it) }
+            _notesState.emitAll(flowUiNotes)
         }
     }
 
     fun deleteAllNotesFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
-            noteDao.deleteAllNotes()
+            interactor.deleteAllNotes()
         }
     }
 
-    fun deleteSingleNote(note: NoteEntity) {
+    fun deleteSingleNote(note: NoteUiModel) {
         viewModelScope.launch(Dispatchers.IO) {
-            noteDao.delete(note)
+            interactor.deleteNote(note.toDomain())
         }
     }
 
     fun saveUserSelectedThemeMode(mode: AppThemeModes) {
-        preferences.saveString(USER_SELECTED_THEME_MODE_KEY, mode.name)
+        interactor.saveString(USER_SELECTED_THEME_MODE_KEY, mode.name)
     }
 
     fun getUserSavedThemeMode() {
-        val mode = when (preferences.getString(USER_SELECTED_THEME_MODE_KEY)) {
+        val mode = when (interactor.getString(USER_SELECTED_THEME_MODE_KEY)) {
             AppThemeModes.LIGHT_MODE.name -> AppThemeModes.LIGHT_MODE
             AppThemeModes.DARK_MODE.name -> AppThemeModes.DARK_MODE
             else -> AppThemeModes.SYSTEM_ADAPT
@@ -58,5 +57,9 @@ class NoteMainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             currentMode.emit(mode)
         }
+    }
+
+    private fun mapAllNotes(domainNotes: List<NoteDomainModel>) = flow<List<NoteUiModel>> {
+        domainNotes.map { it.toUi() }
     }
 }

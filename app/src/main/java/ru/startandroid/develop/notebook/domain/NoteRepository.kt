@@ -13,28 +13,28 @@ interface NoteRepository {
      *
      * @param note Newly created note
      */
-    suspend fun insertNote(note: NoteEntity)
+    suspend fun insertNote(note: NoteDomainModel)
 
     /**
      * Get all saved notes from db
      *
      * @return [Flow] of [List] of [NoteEntity]
      */
-    fun getNotes() : Flow<List<NoteDomainModel>>
+    fun getNotes(): Flow<List<NoteDomainModel>>
 
     /**
      * Update existing note
      *
      * @param note Updated note
      */
-    suspend fun updateNote(note: NoteEntity)
+    suspend fun updateNote(note: NoteDomainModel)
 
     /**
      * Delete a note from db
      *
      * @param note note that we want to delete
      */
-    suspend fun deleteNote(note: NoteEntity)
+    suspend fun deleteNote(note: NoteDomainModel)
 
     /**
      * Delete all note from db

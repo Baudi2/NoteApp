@@ -1,4 +1,4 @@
-package ru.startandroid.develop.notebook.core
+package ru.startandroid.develop.notebook.core.extensions
 
 import java.util.*
 

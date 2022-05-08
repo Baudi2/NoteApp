@@ -20,15 +20,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
-import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
-import ru.startandroid.develop.notebook.model.NoteEntity
 import ru.startandroid.develop.notebook.core.AppThemeModes
-import ru.startandroid.develop.notebook.core.toast
-import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
-import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
+import ru.startandroid.develop.notebook.core.extensions.toast
+import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
+import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteAdapter
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteItemClickListener
 import ru.startandroid.develop.notebook.screens.main.ui.presentation.NoteMainViewModel
+import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
+import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
 
 @AndroidEntryPoint
 class NoteMainFragment : Fragment(), NoteItemClickListener {
@@ -56,7 +56,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         modeChooserResultListener()
     }
 
-    override fun onItemClick(note: NoteEntity) {
+    override fun onItemClick(note: NoteUiModel) {
         val action =
             NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(
                 getString(R.string.change), note
@@ -64,7 +64,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         findNavController().navigate(action)
     }
 
-    override fun onPopupClick(note: NoteEntity, view: View) {
+    override fun onPopupClick(note: NoteUiModel, view: View) {
         showPopup(
             view, R.menu.main_menu_popup,
             getString(R.string.note_was_deleted), R.id.delete_one_item, note
@@ -131,8 +131,8 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    private fun displayNotes(notes: List<NoteEntity>?) {
-        if (notes != null) {
+    private fun displayNotes(notes: List<NoteUiModel>?) {
+        if (notes != null) { //TODO: replace null with empty list check
             // TODO: this text blinks when adding new item & when updating item and opening the app
             binding?.noteMainNoCreatedNotes?.isVisible = notes.isEmpty()
             noteAdapter.submitList(notes)
@@ -141,7 +141,10 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private fun navigateToAdd() {
         val action =
-            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(getString(R.string.create_a_note))
+            NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(
+                getString(R.string.create_a_note),
+                null
+            )
         findNavController().navigate(action)
     }
 
@@ -200,7 +203,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     @SuppressLint("RestrictedApi")
     private fun showPopup(
-        view: View, menu: Int, message: String, menuItemId: Int, note: NoteEntity
+        view: View, menu: Int, message: String, menuItemId: Int, note: NoteUiModel
     ) {
         val menuBuilder = MenuBuilder(requireContext())
         MenuInflater(requireContext()).inflate(menu, menuBuilder)

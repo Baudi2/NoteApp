@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import ru.startandroid.develop.notebook.data.converters.toDomain
+import ru.startandroid.develop.notebook.data.converters.toEntity
 import ru.startandroid.develop.notebook.data.db.NoteDao
 import ru.startandroid.develop.notebook.data.enitities.NoteEntity
 import ru.startandroid.develop.notebook.data.sharedpreferences.PreferenceHelperImpl
@@ -16,19 +17,19 @@ class NoteRepositoryImpl @Inject constructor(
     private val preferences: PreferenceHelperImpl
 ) : NoteRepository {
 
-    override suspend fun insertNote(note: NoteEntity) {
-        dao.insertNote(note)
+    override suspend fun insertNote(note: NoteDomainModel) {
+        dao.insertNote(note.toEntity())
     }
 
     override fun getNotes(): Flow<List<NoteDomainModel>> =
         dao.getNotes().flatMapConcat { mapNotes(it) }
 
-    override suspend fun updateNote(note: NoteEntity) {
-        dao.update(note)
+    override suspend fun updateNote(note: NoteDomainModel) {
+        dao.update(note.toEntity())
     }
 
-    override suspend fun deleteNote(note: NoteEntity) {
-        dao.delete(note)
+    override suspend fun deleteNote(note: NoteDomainModel) {
+        dao.delete(note.toEntity())
     }
 
     override suspend fun deleteAllNotes() {

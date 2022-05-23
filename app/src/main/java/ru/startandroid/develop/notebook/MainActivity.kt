@@ -8,10 +8,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ru.startandroid.develop.notebook.core.AppThemeModes
+import ru.startandroid.develop.notebook.data.sharedpreferences.PreferenceHelper
+import ru.startandroid.develop.notebook.data.sharedpreferences.SharedPreferencesKeys.USER_SELECTED_THEME_MODE_KEY
 import ru.startandroid.develop.notebook.databinding.ActivityMainBinding
-import ru.startandroid.develop.notebook.sharedpreferences.PreferenceHelper
-import ru.startandroid.develop.notebook.sharedpreferences.SharedPreferencesKeys.USER_SELECTED_THEME_MODE_KEY
-import ru.startandroid.develop.notebook.utils.AppThemeModes
 import javax.inject.Inject
 
 @AndroidEntryPoint

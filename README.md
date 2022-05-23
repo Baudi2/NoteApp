@@ -17,6 +17,8 @@
 
 ● Dagger Hilt
 
+● Clean Architecture with MVVM
+
 ● Support for dark mode
 
 ### Скриншоты приложения

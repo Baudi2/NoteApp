@@ -3,8 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/note_main_fragment_background_color"
     android:layout_height="match_parent"
     tools:context=".screens.main.ui.view.NoteMainFragment">
+
+    <EditText
+        android:id="@+id/note_main_search_edit_text"
+        android:layout_width="@dimen/size_zero"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/size_24"
+        android:layout_marginEnd="@dimen/size_24"
+        android:layout_marginTop="@dimen/size_8"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/note_main_recyclerView"
@@ -14,10 +26,11 @@
         android:backgroundTint="@color/note_main_fragment_background_color"
         android:clipToPadding="false"
         android:padding="@dimen/size_6"
+        android:layout_marginTop="@dimen/size_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/note_main_search_edit_text"
         tools:listitem="@layout/note_item" />
 
     <TextView

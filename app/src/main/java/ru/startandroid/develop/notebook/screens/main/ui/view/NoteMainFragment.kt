@@ -94,7 +94,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.notesState.collect {
-                    menu.findItem(R.id.main_menu_delete).isEnabled = it?.isNotEmpty() == true
+                    menu.findItem(R.id.main_menu_delete).isEnabled = it.isNotEmpty() == true
                 }
             }
         }
@@ -131,12 +131,10 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    private fun displayNotes(notes: List<NoteUiModel>?) {
-        if (notes != null) { //TODO: replace null with empty list check
-            // TODO: this text blinks when adding new item & when updating item and opening the app
-            binding?.noteMainNoCreatedNotes?.isVisible = notes.isEmpty()
-            noteAdapter.submitList(notes)
-        }
+    private fun displayNotes(notes: List<NoteUiModel>) {
+        // TODO: this text blinks when adding new item & when updating item and opening the app
+        binding?.noteMainNoCreatedNotes?.isVisible = notes.isEmpty()
+        noteAdapter.submitList(notes)
     }
 
     private fun navigateToAdd() {

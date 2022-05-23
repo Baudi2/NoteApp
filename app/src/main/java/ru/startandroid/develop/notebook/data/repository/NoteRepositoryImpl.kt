@@ -1,8 +1,10 @@
 package ru.startandroid.develop.notebook.data.repository
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import ru.startandroid.develop.notebook.data.converters.toDomain
 import ru.startandroid.develop.notebook.data.converters.toEntity
 import ru.startandroid.develop.notebook.data.db.NoteDao
@@ -22,7 +24,7 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override fun getNotes(): Flow<List<NoteDomainModel>> =
-        dao.getNotes().flatMapConcat { mapNotes(it) }
+        dao.getNotes().flatMapConcat { mapNotes(it) }.flowOn(Dispatchers.IO)
 
     override suspend fun updateNote(note: NoteDomainModel) {
         dao.update(note.toEntity())
@@ -42,9 +44,9 @@ class NoteRepositoryImpl @Inject constructor(
 
     override fun getString(key: String): String? = preferences.getString(key)
 
-    private fun mapNotes(notes: List<NoteEntity>) = flow<List<NoteDomainModel>> {
-        notes.map { dbNote ->
+    private fun mapNotes(notes: List<NoteEntity>) = flow {
+        emit(notes.map { dbNote ->
             dbNote.toDomain()
-        }
-    }
+        })
+    }.flowOn(Dispatchers.IO)
 }

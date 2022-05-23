@@ -19,5 +19,5 @@ class NoteMainInteractorImpl(private val repository: NoteRepository) : NoteMainI
         repository.saveString(key, value)
     }
 
-    override fun getString(key: String): String? = repository.getString(key)
+    override fun getString(key: String): String = repository.getString(key).orEmpty()
 }

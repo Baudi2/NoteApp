@@ -20,8 +20,8 @@ class NoteMainViewModel @Inject constructor(
     private val interactor: NoteMainInteractor
 ) : ViewModel() {
 
-    private val _notesState = MutableStateFlow<List<NoteUiModel>?>(null)
-    val notesState: StateFlow<List<NoteUiModel>?> = _notesState.asStateFlow()
+    private val _notesState = MutableStateFlow<List<NoteUiModel>>(emptyList())
+    val notesState: StateFlow<List<NoteUiModel>> = _notesState.asStateFlow()
 
     val currentMode: MutableStateFlow<AppThemeModes?> = MutableStateFlow(null)
 
@@ -59,7 +59,7 @@ class NoteMainViewModel @Inject constructor(
         }
     }
 
-    private fun mapAllNotes(domainNotes: List<NoteDomainModel>) = flow<List<NoteUiModel>> {
-        domainNotes.map { it.toUi() }
-    }
+    private fun mapAllNotes(domainNotes: List<NoteDomainModel>) = flow {
+        emit(domainNotes.map { it.toUi() })
+    }.flowOn(Dispatchers.IO)
 }

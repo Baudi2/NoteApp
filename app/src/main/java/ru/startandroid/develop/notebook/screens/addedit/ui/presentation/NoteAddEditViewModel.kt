@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.startandroid.develop.notebook.data.db.NoteDao
-import ru.startandroid.develop.notebook.data.enitities.NoteEntity
 import ru.startandroid.develop.notebook.screens.addedit.domain.AddEditInteractor
 import ru.startandroid.develop.notebook.screens.global.converter.toDomain
 import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel

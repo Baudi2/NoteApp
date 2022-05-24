@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -21,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.AppThemeModes
+import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
 import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
@@ -54,6 +56,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         collectNotes()
         initRecyclerView()
         modeChooserResultListener()
+        searchNotes(binding?.noteMainSearchEditText?.text.toString())
     }
 
     override fun onItemClick(note: NoteUiModel) {
@@ -111,6 +114,17 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
                 noteMainFabAddNote.setOnClickListener {
                     navigateToAdd()
                 }
+                noteMainClearEditText.setOnClickListener {
+                    noteMainSearchEditText.setText("")
+                }
+                noteMainSearchEditText.addTextChangedListener {
+                    noteMainClearEditText.isVisible = !it.isNullOrEmpty()
+                    searchNotes(it.toString())
+                }
+                noteMainSearchEditTextLayout.setOnClickListener {
+                    noteMainSearchEditText.requestFocus()
+                    requireContext().showKeyboard(noteMainSearchEditText)
+                }
             }
         }
     }
@@ -133,8 +147,28 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private fun displayNotes(notes: List<NoteUiModel>) {
         // TODO: this text blinks when adding new item & when updating item and opening the app
-        binding?.noteMainNoCreatedNotes?.isVisible = notes.isEmpty()
+        binding?.noteMainNoNotes?.isVisible = notes.isEmpty()
+        if (notes.isEmpty()) binding?.noteMainNoNotes?.text = getString(R.string.no_created_notes)
         noteAdapter.submitList(notes)
+    }
+
+    //TODO: note movement done wrong, fix movement animation. Maybe make search as a viewHolder
+    private fun searchNotes(query: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.notesState.collect { notes ->
+                    notes.filter { filteredNotes ->
+                        filteredNotes.header.lowercase().contains(query.lowercase())
+                    }.let { searchedNoted ->
+                        binding?.noteMainNoNotes?.isVisible = searchedNoted.isEmpty()
+                        if (searchedNoted.isEmpty()) {
+                            binding?.noteMainNoNotes?.text = getString(R.string.empty_search_result_message)
+                        }
+                        noteAdapter.submitList(searchedNoted)
+                    }
+                }
+            }
+        }
     }
 
     private fun navigateToAdd() {

@@ -4,7 +4,7 @@ import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
 import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 
 fun NoteUiModel.toDomain() = NoteDomainModel(
-    id = id,
+    id = noteId,
     header = header,
     description = description,
     timeStamp = timeStamp,

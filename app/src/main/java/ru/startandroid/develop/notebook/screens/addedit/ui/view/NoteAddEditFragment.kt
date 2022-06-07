@@ -71,7 +71,7 @@ class NoteAddEditFragment : Fragment() {
         if (validateInputFields()) {
             viewModel.insertItem(
                 NoteUiModel(
-                    id = null,
+                    noteId = null,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
                     description = binding?.noteAddEditDescEditText?.text.toString(),
                     timeStamp = null,
@@ -88,7 +88,7 @@ class NoteAddEditFragment : Fragment() {
         if (validateInputFields()) {
             viewModel.updatedItem(
                 NoteUiModel(
-                    id = note.id,
+                    noteId = note.noteId,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
                     description = binding?.noteAddEditDescEditText?.text.toString(),
                     timeStamp = note.timeStamp,

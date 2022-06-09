@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.screens.addedit.domain.AddEditInteractor
 import ru.startandroid.develop.notebook.screens.global.converter.toDomain
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,13 +15,13 @@ class NoteAddEditViewModel @Inject constructor(
     private val interactor: AddEditInteractor
 ) : ViewModel() {
 
-    fun insertItem(note: NoteUiModel) {
+    fun insertItem(note: NoteUi) {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.insertNote(note.toDomain())
         }
     }
 
-    fun updatedItem(note: NoteUiModel) {
+    fun updatedItem(note: NoteUi) {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.updateNote(note.toDomain())
         }

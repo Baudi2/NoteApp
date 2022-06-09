@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -23,28 +24,21 @@ import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.AppThemeModes
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
-import ru.startandroid.develop.notebook.screens.global.model.NoteSearchHeaderModel
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteAdapter
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteItemClickListener
-import ru.startandroid.develop.notebook.screens.main.ui.adapter.SearchItemListener
 import ru.startandroid.develop.notebook.screens.main.ui.presentation.NoteMainViewModel
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
 
 @AndroidEntryPoint
-class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
+class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private var binding: NoteMainFragmentBinding? = null
 
     private val viewModel by viewModels<NoteMainViewModel>()
 
-    private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this, this) }
-
-    private var oldQuery = ""
-
-    private var headerList: List<NoteUi> = emptyList()
+    private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -61,10 +55,9 @@ class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
         collectNotes()
         initRecyclerView()
         modeChooserResultListener()
-        onSearchQueryChanged(oldQuery)
     }
 
-    override fun onItemClick(note: NoteUiModel) {
+    override fun onItemClick(note: NoteUi) {
         val action =
             NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(
                 getString(R.string.change), note
@@ -72,7 +65,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
         findNavController().navigate(action)
     }
 
-    override fun onPopupClick(note: NoteUiModel, view: View) {
+    override fun onPopupClick(note: NoteUi, view: View) {
         showPopup(
             view, R.menu.main_menu_popup,
             getString(R.string.note_was_deleted), R.id.delete_one_item, note
@@ -113,25 +106,18 @@ class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
         binding = null
     }
 
-    override fun onSearchQueryChanged(query: String) {
-        oldQuery = query
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.notesState.collect { notes ->
-                    searchItem(notes, query)
-                }
-            }
-        }
-    }
-
     private fun initViews() {
         binding?.let { binding ->
             with(binding) {
                 noteMainFabAddNote.setOnClickListener {
                     navigateToAdd()
                 }
+                noteMainClearSearch.setOnClickListener { noteMainSearchEditText.setText("") }
+                noteMainSearchEditText.addTextChangedListener { query ->
+                    noteMainClearSearch.isVisible = !query.isNullOrEmpty()
+                    onSearchQueryChanged(query.toString())
+                }
             }
-            headerList = listOf(NoteSearchHeaderModel(query = oldQuery))
         }
     }
 
@@ -158,8 +144,18 @@ class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
         noteAdapter.submitList(notes)
     }
 
+    private fun onSearchQueryChanged(query: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.notesState.collect { notes ->
+                    searchItem(notes, query)
+                }
+            }
+        }
+    }
+
     private fun searchItem(notes: List<NoteUi>, query: String) {
-        notes.filterIsInstance<NoteUiModel>().filter { filteredNotes ->
+        notes.filter { filteredNotes ->
             filteredNotes.header.lowercase().contains(query.lowercase())
         }.let { searchedNotes ->
             binding?.noteMainNoNotes?.isVisible = searchedNotes.isEmpty()
@@ -167,7 +163,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
                 binding?.noteMainNoNotes?.text =
                     getString(R.string.empty_search_result_message)
             }
-            noteAdapter.submitList(headerList + searchedNotes)
+            noteAdapter.submitList(searchedNotes)
         }
     }
 
@@ -235,7 +231,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener, SearchItemListener {
 
     @SuppressLint("RestrictedApi")
     private fun showPopup(
-        view: View, menu: Int, message: String, menuItemId: Int, note: NoteUiModel
+        view: View, menu: Int, message: String, menuItemId: Int, note: NoteUi
     ) {
         val menuBuilder = MenuBuilder(requireContext())
         MenuInflater(requireContext()).inflate(menu, menuBuilder)

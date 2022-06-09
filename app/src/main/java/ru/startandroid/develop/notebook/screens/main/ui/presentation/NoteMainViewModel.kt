@@ -11,9 +11,7 @@ import ru.startandroid.develop.notebook.data.sharedpreferences.SharedPreferences
 import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
 import ru.startandroid.develop.notebook.screens.global.converter.toDomain
 import ru.startandroid.develop.notebook.screens.global.converter.toUi
-import ru.startandroid.develop.notebook.screens.global.model.NoteSearchHeaderModel
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
 import ru.startandroid.develop.notebook.screens.main.domain.NoteMainInteractor
 import javax.inject.Inject
 
@@ -40,7 +38,7 @@ class NoteMainViewModel @Inject constructor(
         }
     }
 
-    fun deleteSingleNote(note: NoteUiModel) {
+    fun deleteSingleNote(note: NoteUi) {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.deleteNote(note.toDomain())
         }

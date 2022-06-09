@@ -11,7 +11,7 @@ import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.screens.addedit.ui.presentation.NoteAddEditViewModel
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 
 @AndroidEntryPoint
 class NoteAddEditFragment : Fragment() {
@@ -70,7 +70,7 @@ class NoteAddEditFragment : Fragment() {
     private fun saveItem() {
         if (validateInputFields()) {
             viewModel.insertItem(
-                NoteUiModel(
+                NoteUi(
                     noteId = null,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
                     description = binding?.noteAddEditDescEditText?.text.toString(),
@@ -84,10 +84,10 @@ class NoteAddEditFragment : Fragment() {
         }
     }
 
-    private fun updateNote(note: NoteUiModel) {
+    private fun updateNote(note: NoteUi) {
         if (validateInputFields()) {
             viewModel.updatedItem(
-                NoteUiModel(
+                NoteUi(
                     noteId = note.noteId,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
                     description = binding?.noteAddEditDescEditText?.text.toString(),

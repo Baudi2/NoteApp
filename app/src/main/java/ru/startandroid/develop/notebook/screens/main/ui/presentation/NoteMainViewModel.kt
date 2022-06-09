@@ -32,6 +32,18 @@ class NoteMainViewModel @Inject constructor(
         }
     }
 
+    fun insertNote(note: NoteUi) {
+        viewModelScope.launch(Dispatchers.IO) {
+            interactor.insertNote(note.toDomain())
+        }
+    }
+
+    fun insertAllNotes(notes: List<NoteUi>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            interactor.insertAllNotes(notes.map { it.toDomain() })
+        }
+    }
+
     fun deleteAllNotesFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.deleteAllNotes()

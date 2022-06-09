@@ -11,6 +11,7 @@
         android:id="@+id/note_main_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/size_8"
         android:backgroundTint="@color/note_main_fragment_background_color"
         android:outlineProvider="none">
 
@@ -33,7 +34,7 @@
                 android:src="@drawable/ic_search"
                 tools:ignore="ContentDescription" />
 
-            <EditText
+                <EditText
                 android:id="@+id/note_main_search_edit_text"
                 android:layout_width="@dimen/size_zero"
                 android:layout_height="match_parent"

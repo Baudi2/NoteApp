@@ -1,11 +1,13 @@
 package ru.startandroid.develop.notebook.screens.main.ui.view
 
 import android.annotation.SuppressLint
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -18,11 +20,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.AppThemeModes
-import ru.startandroid.develop.notebook.core.extensions.toast
+import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteAdapter
@@ -40,6 +43,29 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
 
+    private val viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
+        val rect = Rect()
+        binding?.root?.getWindowVisibleDisplayFrame(rect)
+        val screenHeight: Int = binding?.root?.rootView?.height ?: 0
+        val keypadHeight: Int = screenHeight - rect.bottom
+
+        if (keypadHeight > screenHeight * 0.15) {
+            // keyboard is opened
+            if (!isKeyboardShowing) {
+                isKeyboardShowing = true
+                keyboardVisibilityListener(true)
+            }
+        } else {
+            // keyboard is closed
+            if (isKeyboardShowing) {
+                isKeyboardShowing = false
+                keyboardVisibilityListener(false)
+            }
+        }
+    }
+
+    private var isKeyboardShowing = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -55,6 +81,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         collectNotes()
         initRecyclerView()
         modeChooserResultListener()
+        keyboardOpenListener(true)
     }
 
     override fun onItemClick(note: NoteUi) {
@@ -66,10 +93,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
     }
 
     override fun onPopupClick(note: NoteUi, view: View) {
-        showPopup(
-            view, R.menu.main_menu_popup,
-            getString(R.string.note_was_deleted), R.id.delete_one_item, note
-        )
+        showPopup(view, R.menu.main_menu_popup, R.id.delete_one_item, note)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -103,6 +127,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        keyboardOpenListener(false)
         binding = null
     }
 
@@ -117,6 +142,10 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
                     noteMainClearSearch.isVisible = !query.isNullOrEmpty()
                     onSearchQueryChanged(query.toString())
                 }
+                noteMainSearchLayout.setOnClickListener {
+                    noteMainSearchEditText.requestFocus()
+                    requireContext().showKeyboard(noteMainSearchEditText)
+                }
             }
         }
     }
@@ -126,6 +155,14 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             adapter = noteAdapter
             layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
             setHasFixedSize(true)
+        }
+    }
+
+    private fun keyboardVisibilityListener(isOpen: Boolean) {
+        binding?.let { binding ->
+            with(binding) {
+                noteMainFabAddNote.isVisible = !isOpen
+            }
         }
     }
 
@@ -181,8 +218,8 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             .setTitle(getString(R.string.attention))
             .setMessage(getString(R.string.confirm_delete_all_notes_message))
             .setPositiveButton(getString(R.string.delete_all_notes)) { _, _ ->
+                showUndoDeleteAllNotesSnackBar(viewModel.notesState.value)
                 viewModel.deleteAllNotesFromDb()
-                requireContext().toast(getString(R.string.all_notes_were_deleted))
             }.setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
     }
@@ -231,7 +268,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     @SuppressLint("RestrictedApi")
     private fun showPopup(
-        view: View, menu: Int, message: String, menuItemId: Int, note: NoteUi
+        view: View, menu: Int, menuItemId: Int, note: NoteUi
     ) {
         val menuBuilder = MenuBuilder(requireContext())
         MenuInflater(requireContext()).inflate(menu, menuBuilder)
@@ -241,8 +278,8 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem) =
                 when (item.itemId) {
                     menuItemId -> {
-                        requireContext().toast(message)
                         viewModel.deleteSingleNote(note)
+                        showUndoNoteDeleteSnackBar(note)
                         true
                     }
                     else -> false
@@ -251,5 +288,38 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             override fun onMenuModeChange(menu: MenuBuilder) {}
         }))
         optionsMenu.show()
+    }
+
+    private fun showUndoNoteDeleteSnackBar(note: NoteUi) {
+        binding?.let { binding ->
+            Snackbar.make(
+                requireContext(),
+                binding.root,
+                getString(R.string.cancel_note_deletion_message),
+                Snackbar.LENGTH_LONG
+            ).setAction(getString(R.string.undo)) {
+                viewModel.insertNote(note)
+            }.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.cancel_color))
+                .show()
+        }
+    }
+
+    private fun showUndoDeleteAllNotesSnackBar(notes: List<NoteUi>) {
+        binding?.let { binding ->
+            Snackbar.make(
+                requireContext(),
+                binding.root,
+                getString(R.string.cancel_all_notes_deletion_message),
+                Snackbar.LENGTH_LONG
+            ).setAction(getString(R.string.undo)) {
+                viewModel.insertAllNotes(notes)
+            }.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.cancel_color))
+                .show()
+        }
+    }
+
+    private fun keyboardOpenListener(isListening: Boolean) {
+        if (isListening) binding?.root?.viewTreeObserver?.addOnGlobalLayoutListener(viewTreeObserver)
+        else binding?.root?.viewTreeObserver?.removeOnGlobalLayoutListener(viewTreeObserver)
     }
 }

@@ -5,6 +5,14 @@ import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
 
 class NoteMainInteractorImpl(private val repository: NoteRepository) : NoteMainInteractor {
 
+    override suspend fun insertNote(note: NoteDomainModel) {
+        repository.insertNote(note)
+    }
+
+    override suspend fun insertAllNotes(notes: List<NoteDomainModel>) {
+        repository.insertAllNotes(notes)
+    }
+
     override fun getAllNotes() = repository.getNotes()
 
     override suspend fun deleteNote(note: NoteDomainModel) {

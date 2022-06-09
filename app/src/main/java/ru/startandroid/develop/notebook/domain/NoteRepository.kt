@@ -16,6 +16,13 @@ interface NoteRepository {
     suspend fun insertNote(note: NoteDomainModel)
 
     /**
+     * Insert a list notes into the db
+     *
+     * @param notes Notes to insert
+     */
+    suspend fun insertAllNotes(notes: List<NoteDomainModel>)
+
+    /**
      * Get all saved notes from db
      *
      * @return [Flow] of [List] of [NoteEntity]

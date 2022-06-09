@@ -7,6 +7,7 @@
     <string name="cancel">Отмена</string>
     <string name="change">Изменить</string>
     <string name="attention">Внимание!</string>
+    <string name="undo">Отменить</string>
 
     <!-- Note Main Fragment Strings -->
     <string name="no_created_notes">У вас нет созданных заметок</string>
@@ -17,6 +18,8 @@
     <string name="all_notes_were_deleted">Все заметки были удалены</string>
     <string name="search_note_hint">Найти заметку</string>
     <string name="empty_search_result_message">Заметки не найдены</string>
+    <string name="cancel_note_deletion_message">Заметка была удалена</string>
+    <string name="cancel_all_notes_deletion_message">Заметки были удалены</string>
 
     <!-- Note Add Edit Fragment -->
     <string name="header_edit_text">Заголовок</string>

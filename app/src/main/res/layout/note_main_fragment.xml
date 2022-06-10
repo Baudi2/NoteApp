@@ -1,48 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/note_main_fragment_background_color"
     tools:context=".screens.main.ui.view.NoteMainFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/note_main_app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/size_8"
+        android:backgroundTint="@color/note_main_fragment_background_color"
+        android:outlineProvider="none">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/note_main_search_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_38"
+            android:layout_marginStart="@dimen/size_16"
+            android:layout_marginTop="@dimen/size_16"
+            android:layout_marginEnd="@dimen/size_16"
+            android:background="@drawable/rounded_corner_drawable"
+            android:elevation="@dimen/size_1"
+            app:layout_scrollFlags="scroll">
+
+            <ImageView
+                android:layout_width="@dimen/size_16"
+                android:layout_height="@dimen/size_16"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/size_8"
+                android:src="@drawable/ic_search"
+                tools:ignore="ContentDescription" />
+
+                <EditText
+                android:id="@+id/note_main_search_edit_text"
+                android:layout_width="@dimen/size_zero"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/size_8"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/search_note_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/edit_text_hint_color"
+                android:textSize="@dimen/text_14"
+                tools:ignore="Autofill" />
+
+            <ImageView
+                android:id="@+id/note_main_clear_search"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:paddingStart="@dimen/size_8"
+                android:paddingEnd="@dimen/size_16"
+                android:src="@drawable/ic_cancel"
+                android:visibility="gone"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/note_main_recyclerView"
-        android:layout_width="@dimen/size_zero"
-        android:layout_height="@dimen/size_zero"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/light_grey"
         android:backgroundTint="@color/note_main_fragment_background_color"
         android:clipToPadding="false"
         android:padding="@dimen/size_6"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/note_item" />
 
     <TextView
-        android:id="@+id/note_main_no_created_notes"
+        android:id="@+id/note_main_no_notes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/size_120"
         android:text="@string/no_created_notes"
         android:textColor="@color/adaptive_text_color"
-        android:textSize="@dimen/text_20"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="@dimen/text_20" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/note_main_fab_add_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/size_24"
         android:layout_marginBottom="@dimen/size_24"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/teal_adaptive_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize="@dimen/size_32"
         app:tint="@color/white"
         tools:ignore="ContentDescription" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

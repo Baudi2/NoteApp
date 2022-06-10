@@ -4,14 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import ru.startandroid.develop.notebook.databinding.NoteItemBinding
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 
 class NoteAdapter(
     private val listener: NoteItemClickListener
-) : ListAdapter<NoteUiModel, NoteViewHolder>(NoteDiffCallback()) {
-
+) : ListAdapter<NoteUi, NoteViewHolder>(NoteDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NoteViewHolder(binding, listener)
     }
 

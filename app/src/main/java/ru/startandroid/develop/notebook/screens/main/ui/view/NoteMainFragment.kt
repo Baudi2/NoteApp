@@ -1,12 +1,14 @@
 package ru.startandroid.develop.notebook.screens.main.ui.view
 
 import android.annotation.SuppressLint
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -21,14 +23,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.AppThemeModes
-import ru.startandroid.develop.notebook.core.extensions.toast
+import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteAdapter
 import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteItemClickListener
 import ru.startandroid.develop.notebook.screens.main.ui.presentation.NoteMainViewModel
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
+import ru.startandroid.develop.notebook.ui.customclasses.TimedSnackBar
 
 @AndroidEntryPoint
 class NoteMainFragment : Fragment(), NoteItemClickListener {
@@ -38,6 +41,30 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
     private val viewModel by viewModels<NoteMainViewModel>()
 
     private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
+
+    // возможно вынести в базовый класс
+    private val viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
+        val rect = Rect()
+        binding?.root?.getWindowVisibleDisplayFrame(rect)
+        val screenHeight: Int = binding?.root?.rootView?.height ?: 0
+        val keypadHeight: Int = screenHeight - rect.bottom
+
+        if (keypadHeight > screenHeight * 0.15) {
+            // keyboard is opened
+            if (!isKeyboardShowing) {
+                isKeyboardShowing = true
+                keyboardVisibilityListener(true)
+            }
+        } else {
+            // keyboard is closed
+            if (isKeyboardShowing) {
+                isKeyboardShowing = false
+                keyboardVisibilityListener(false)
+            }
+        }
+    }
+
+    private var isKeyboardShowing = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -54,9 +81,10 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         collectNotes()
         initRecyclerView()
         modeChooserResultListener()
+        keyboardOpenListener(true)
     }
 
-    override fun onItemClick(note: NoteUiModel) {
+    override fun onItemClick(note: NoteUi) {
         val action =
             NoteMainFragmentDirections.actionNoteMainFragmentToNoteAddEditFragment(
                 getString(R.string.change), note
@@ -64,11 +92,8 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         findNavController().navigate(action)
     }
 
-    override fun onPopupClick(note: NoteUiModel, view: View) {
-        showPopup(
-            view, R.menu.main_menu_popup,
-            getString(R.string.note_was_deleted), R.id.delete_one_item, note
-        )
+    override fun onPopupClick(note: NoteUi, view: View) {
+        showPopup(view, R.menu.main_menu_popup, R.id.delete_one_item, note)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -102,6 +127,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        keyboardOpenListener(false)
         binding = null
     }
 
@@ -110,6 +136,15 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             with(binding) {
                 noteMainFabAddNote.setOnClickListener {
                     navigateToAdd()
+                }
+                noteMainClearSearch.setOnClickListener { noteMainSearchEditText.setText("") }
+                noteMainSearchEditText.addTextChangedListener { query ->
+                    noteMainClearSearch.isVisible = !query.isNullOrEmpty()
+                    onSearchQueryChanged(query.toString())
+                }
+                noteMainSearchLayout.setOnClickListener {
+                    noteMainSearchEditText.requestFocus()
+                    requireContext().showKeyboard(noteMainSearchEditText)
                 }
             }
         }
@@ -123,6 +158,14 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
+    private fun keyboardVisibilityListener(isOpen: Boolean) {
+        binding?.let { binding ->
+            with(binding) {
+                noteMainFabAddNote.isVisible = !isOpen
+            }
+        }
+    }
+
     private fun collectNotes() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -131,10 +174,34 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    private fun displayNotes(notes: List<NoteUiModel>) {
+    private fun displayNotes(notes: List<NoteUi>) {
         // TODO: this text blinks when adding new item & when updating item and opening the app
-        binding?.noteMainNoCreatedNotes?.isVisible = notes.isEmpty()
+        binding?.noteMainNoNotes?.isVisible = notes.isEmpty()
+        if (notes.isEmpty()) binding?.noteMainNoNotes?.text = getString(R.string.no_created_notes)
         noteAdapter.submitList(notes)
+    }
+
+    private fun onSearchQueryChanged(query: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.notesState.collect { notes ->
+                    searchItem(notes, query)
+                }
+            }
+        }
+    }
+
+    private fun searchItem(notes: List<NoteUi>, query: String) {
+        notes.filter { filteredNotes ->
+            filteredNotes.header.lowercase().contains(query.lowercase())
+        }.let { searchedNotes ->
+            binding?.noteMainNoNotes?.isVisible = searchedNotes.isEmpty()
+            if (searchedNotes.isEmpty()) {
+                binding?.noteMainNoNotes?.text =
+                    getString(R.string.empty_search_result_message)
+            }
+            noteAdapter.submitList(searchedNotes)
+        }
     }
 
     private fun navigateToAdd() {
@@ -151,8 +218,8 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             .setTitle(getString(R.string.attention))
             .setMessage(getString(R.string.confirm_delete_all_notes_message))
             .setPositiveButton(getString(R.string.delete_all_notes)) { _, _ ->
+                showUndoDeleteAllNotesSnackBar(viewModel.notesState.value)
                 viewModel.deleteAllNotesFromDb()
-                requireContext().toast(getString(R.string.all_notes_were_deleted))
             }.setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
     }
@@ -201,7 +268,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     @SuppressLint("RestrictedApi")
     private fun showPopup(
-        view: View, menu: Int, message: String, menuItemId: Int, note: NoteUiModel
+        view: View, menu: Int, menuItemId: Int, note: NoteUi
     ) {
         val menuBuilder = MenuBuilder(requireContext())
         MenuInflater(requireContext()).inflate(menu, menuBuilder)
@@ -211,8 +278,8 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem) =
                 when (item.itemId) {
                     menuItemId -> {
-                        requireContext().toast(message)
                         viewModel.deleteSingleNote(note)
+                        showUndoNoteDeleteSnackBar(note)
                         true
                     }
                     else -> false
@@ -221,5 +288,30 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             override fun onMenuModeChange(menu: MenuBuilder) {}
         }))
         optionsMenu.show()
+    }
+
+    private fun showUndoNoteDeleteSnackBar(note: NoteUi) {
+        binding?.let { binding ->
+            TimedSnackBar(binding.root).showSnackBar(
+                getString(R.string.cancel_note_deletion_message),
+                getString(R.string.undo),
+                TimedSnackBar.LENGTH_SHORT
+            ) { viewModel.insertNote(note) }
+        }
+    }
+
+    private fun showUndoDeleteAllNotesSnackBar(notes: List<NoteUi>) {
+        binding?.let { binding ->
+            TimedSnackBar(binding.root).showSnackBar(
+                getString(R.string.cancel_all_notes_deletion_message),
+                getString(R.string.undo),
+                TimedSnackBar.LENGTH_LONG
+            ) { viewModel.insertAllNotes(notes) }
+        }
+    }
+
+    private fun keyboardOpenListener(isListening: Boolean) {
+        if (isListening) binding?.root?.viewTreeObserver?.addOnGlobalLayoutListener(viewTreeObserver)
+        else binding?.root?.viewTreeObserver?.removeOnGlobalLayoutListener(viewTreeObserver)
     }
 }

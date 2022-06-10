@@ -23,6 +23,10 @@ class NoteRepositoryImpl @Inject constructor(
         dao.insertNote(note.toEntity())
     }
 
+    override suspend fun insertAllNotes(notes: List<NoteDomainModel>) {
+        dao.insertAllNotes(notes.map { it.toEntity() })
+    }
+
     override fun getNotes(): Flow<List<NoteDomainModel>> =
         dao.getNotes().flatMapConcat { mapNotes(it) }.flowOn(Dispatchers.IO)
 

@@ -14,6 +14,7 @@
         <!-- Customize your theme here. -->
         <!-- Popup menu appearance-->
         <item name="popupMenuStyle">@style/ChatPopupMenu</item>
+        <item name="android:itemTextAppearance">@style/menuItem</item>
     </style>
 
     <style name="ChatPopupMenu" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
@@ -28,5 +29,9 @@
         <item name="android:textSize">@dimen/text_16</item>
         <item name="android:paddingStart">@dimen/size_16</item>
         <item name="android:paddingEnd">@dimen/size_16</item>
+    </style>
+
+    <style name="menuItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">@color/black</item>
     </style>
 </resources>

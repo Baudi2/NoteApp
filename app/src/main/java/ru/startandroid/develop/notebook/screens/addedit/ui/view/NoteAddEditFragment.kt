@@ -8,10 +8,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.R
+import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.screens.addedit.ui.presentation.NoteAddEditViewModel
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 
 @AndroidEntryPoint
 class NoteAddEditFragment : Fragment() {
@@ -63,6 +64,10 @@ class NoteAddEditFragment : Fragment() {
                     noteAddEditEditTextHeader.setText(note.header)
                     noteAddEditDescEditText.setText(note.description)
                 }
+                if (args.note == null) {
+                    noteAddEditDescEditText.requestFocus()
+                    requireContext().showKeyboard(noteAddEditDescEditText)
+                }
             }
         }
     }
@@ -70,8 +75,8 @@ class NoteAddEditFragment : Fragment() {
     private fun saveItem() {
         if (validateInputFields()) {
             viewModel.insertItem(
-                NoteUiModel(
-                    id = null,
+                NoteUi(
+                    noteId = null,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
                     description = binding?.noteAddEditDescEditText?.text.toString(),
                     timeStamp = null,
@@ -84,11 +89,11 @@ class NoteAddEditFragment : Fragment() {
         }
     }
 
-    private fun updateNote(note: NoteUiModel) {
+    private fun updateNote(note: NoteUi) {
         if (validateInputFields()) {
             viewModel.updatedItem(
-                NoteUiModel(
-                    id = note.id,
+                NoteUi(
+                    noteId = note.noteId,
                     header = binding?.noteAddEditEditTextHeader?.text.toString(),
                     description = binding?.noteAddEditDescEditText?.text.toString(),
                     timeStamp = note.timeStamp,

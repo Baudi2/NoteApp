@@ -9,4 +9,6 @@
     <color name="note_add_edit_fragment_background_color">#4C4C4C</color>
     <color name="teal_adaptive_color">#396E68</color>
     <color name="radio_button_unchecked_color">#CACACA</color>
+    <color name="inverse_adaptive_text_color">#FF000000</color>
+    <color name="search_bar_background_color">#303030</color>
 </resources>

@@ -7,6 +7,22 @@ import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
 interface NoteMainInteractor {
 
     /**
+     * Insert a newly created note into the db
+     *
+     * If such note already exists the older one will be replaced with new one
+     *
+     * @param note Newly created note
+     */
+    suspend fun insertNote(note: NoteDomainModel)
+
+    /**
+     * Insert a list notes into the db
+     *
+     * @param notes Notes to insert
+     */
+    suspend fun insertAllNotes(notes: List<NoteDomainModel>)
+
+    /**
      * Get all saved notes from db
      *
      * @return [Flow] of [List] of [NoteEntity]

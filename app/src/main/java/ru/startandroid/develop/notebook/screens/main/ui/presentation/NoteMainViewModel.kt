@@ -11,7 +11,7 @@ import ru.startandroid.develop.notebook.data.sharedpreferences.SharedPreferences
 import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
 import ru.startandroid.develop.notebook.screens.global.converter.toDomain
 import ru.startandroid.develop.notebook.screens.global.converter.toUi
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 import ru.startandroid.develop.notebook.screens.main.domain.NoteMainInteractor
 import javax.inject.Inject
 
@@ -20,8 +20,8 @@ class NoteMainViewModel @Inject constructor(
     private val interactor: NoteMainInteractor
 ) : ViewModel() {
 
-    private val _notesState = MutableStateFlow<List<NoteUiModel>>(emptyList())
-    val notesState: StateFlow<List<NoteUiModel>> = _notesState.asStateFlow()
+    private val _notesState = MutableStateFlow<List<NoteUi>>(emptyList())
+    val notesState: StateFlow<List<NoteUi>> = _notesState.asStateFlow()
 
     val currentMode: MutableStateFlow<AppThemeModes?> = MutableStateFlow(null)
 
@@ -32,13 +32,25 @@ class NoteMainViewModel @Inject constructor(
         }
     }
 
+    fun insertNote(note: NoteUi) {
+        viewModelScope.launch(Dispatchers.IO) {
+            interactor.insertNote(note.toDomain())
+        }
+    }
+
+    fun insertAllNotes(notes: List<NoteUi>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            interactor.insertAllNotes(notes.map { it.toDomain() })
+        }
+    }
+
     fun deleteAllNotesFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.deleteAllNotes()
         }
     }
 
-    fun deleteSingleNote(note: NoteUiModel) {
+    fun deleteSingleNote(note: NoteUi) {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.deleteNote(note.toDomain())
         }

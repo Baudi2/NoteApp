@@ -1,10 +1,10 @@
 package ru.startandroid.develop.notebook.screens.global.converter
 
 import ru.startandroid.develop.notebook.domain.model.NoteDomainModel
-import ru.startandroid.develop.notebook.screens.global.model.NoteUiModel
+import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 
-fun NoteUiModel.toDomain() = NoteDomainModel(
-    id = id,
+fun NoteUi.toDomain() = NoteDomainModel(
+    id = noteId,
     header = header,
     description = description,
     timeStamp = timeStamp,

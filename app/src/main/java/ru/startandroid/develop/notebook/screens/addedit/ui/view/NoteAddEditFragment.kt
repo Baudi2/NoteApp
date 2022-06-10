@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.R
+import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.screens.addedit.ui.presentation.NoteAddEditViewModel
@@ -62,6 +63,10 @@ class NoteAddEditFragment : Fragment() {
                 args.note?.let { note ->
                     noteAddEditEditTextHeader.setText(note.header)
                     noteAddEditDescEditText.setText(note.description)
+                }
+                if (args.note == null) {
+                    noteAddEditDescEditText.requestFocus()
+                    requireContext().showKeyboard(noteAddEditDescEditText)
                 }
             }
         }

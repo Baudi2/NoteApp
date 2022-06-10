@@ -33,6 +33,7 @@ import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteItemClickLis
 import ru.startandroid.develop.notebook.screens.main.ui.presentation.NoteMainViewModel
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
+import ru.startandroid.develop.notebook.ui.customclasses.TimedSnackBar
 
 @AndroidEntryPoint
 class NoteMainFragment : Fragment(), NoteItemClickListener {
@@ -43,6 +44,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
 
+    //TODO: вынести в базовый класс
     private val viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
         val rect = Rect()
         binding?.root?.getWindowVisibleDisplayFrame(rect)
@@ -292,29 +294,21 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private fun showUndoNoteDeleteSnackBar(note: NoteUi) {
         binding?.let { binding ->
-            Snackbar.make(
-                requireContext(),
-                binding.root,
+            TimedSnackBar(binding.root).showSnackBar(
                 getString(R.string.cancel_note_deletion_message),
-                Snackbar.LENGTH_LONG
-            ).setAction(getString(R.string.undo)) {
-                viewModel.insertNote(note)
-            }.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.cancel_color))
-                .show()
+                getString(R.string.undo),
+                TimedSnackBar.LENGTH_SHORT
+            ) { viewModel.insertNote(note) }
         }
     }
 
     private fun showUndoDeleteAllNotesSnackBar(notes: List<NoteUi>) {
         binding?.let { binding ->
-            Snackbar.make(
-                requireContext(),
-                binding.root,
+            TimedSnackBar(binding.root).showSnackBar(
                 getString(R.string.cancel_all_notes_deletion_message),
-                Snackbar.LENGTH_LONG
-            ).setAction(getString(R.string.undo)) {
-                viewModel.insertAllNotes(notes)
-            }.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.cancel_color))
-                .show()
+                getString(R.string.undo),
+                TimedSnackBar.LENGTH_LONG
+            ) { viewModel.insertAllNotes(notes) }
         }
     }
 

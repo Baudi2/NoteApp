@@ -44,7 +44,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
 
     private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
 
-    //TODO: вынести в базовый класс
+    // возможно вынести в базовый класс
     private val viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
         val rect = Rect()
         binding?.root?.getWindowVisibleDisplayFrame(rect)

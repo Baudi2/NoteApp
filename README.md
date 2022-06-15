@@ -23,5 +23,5 @@
 
 ### Скриншоты приложения
 
-<img src="https://user-images.githubusercontent.com/60889423/173850867-a79e06c7-d642-40f4-910b-f06bc851b592.jpg" width="350" height="600">
+<img src="https://user-images.githubusercontent.com/60889423/173851467-722b3be4-e92d-4f25-8ade-aab4cfe130ca.jpg" width="350" height="600">
 <img src="https://user-images.githubusercontent.com/60889423/163384245-87b0c732-4ab4-41d5-a153-1b179e0b12f9.png" width="350" height="600">

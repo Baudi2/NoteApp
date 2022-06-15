@@ -8,11 +8,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.R
+import ru.startandroid.develop.notebook.core.Constants.MAIN_DATE_FORMAT
 import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.screens.addedit.ui.presentation.NoteAddEditViewModel
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class NoteAddEditFragment : Fragment() {
@@ -45,8 +48,8 @@ class NoteAddEditFragment : Fragment() {
         when (item.itemId) {
             R.id.noteMainFragment -> {
                 val note = args.note
-                if (note != null) updateNote(note)
-                else saveItem()
+                if (note != null) saveItem(note)
+                else saveItem(null)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -72,34 +75,20 @@ class NoteAddEditFragment : Fragment() {
         }
     }
 
-    private fun saveItem() {
+    private fun saveItem(noteForUpdate: NoteUi?) {
         if (validateInputFields()) {
-            viewModel.insertItem(
-                NoteUi(
-                    noteId = null,
-                    header = binding?.noteAddEditEditTextHeader?.text.toString(),
-                    description = binding?.noteAddEditDescEditText?.text.toString(),
-                    timeStamp = null,
-                    createdDateFormatted = null
-                )
+            val date = Date()
+            val createdDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+            val formattedTime = SimpleDateFormat(MAIN_DATE_FORMAT, Locale.getDefault()).format(date)
+            val note = NoteUi(
+                id = noteForUpdate?.id,
+                header = binding?.noteAddEditEditTextHeader?.text.toString(),
+                description = binding?.noteAddEditDescEditText?.text.toString(),
+                createdDate = date,
+                creationDay = createdDay,
+                formattedTime = formattedTime
             )
-            val action =
-                NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
-            findNavController().navigate(action)
-        }
-    }
-
-    private fun updateNote(note: NoteUi) {
-        if (validateInputFields()) {
-            viewModel.updatedItem(
-                NoteUi(
-                    noteId = note.noteId,
-                    header = binding?.noteAddEditEditTextHeader?.text.toString(),
-                    description = binding?.noteAddEditDescEditText?.text.toString(),
-                    timeStamp = note.timeStamp,
-                    createdDateFormatted = note.createdDateFormatted
-                )
-            )
+            viewModel.insertItem(note)
             val action =
                 NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
             findNavController().navigate(action)

@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import ru.startandroid.develop.notebook.domain.NoteDateFormatter
 import ru.startandroid.develop.notebook.domain.NoteRepository
 import ru.startandroid.develop.notebook.screens.addedit.domain.AddEditInteractor
 import ru.startandroid.develop.notebook.screens.addedit.domain.AddEditInteractorImpl
@@ -15,8 +16,8 @@ import ru.startandroid.develop.notebook.screens.main.domain.NoteMainInteractorIm
 class InteractorModule {
 
     @Provides
-    fun provideNoteMainInteractor(noteRepository: NoteRepository): NoteMainInteractor =
-        NoteMainInteractorImpl(noteRepository)
+    fun provideNoteMainInteractor(noteRepository: NoteRepository, noteDateFormatter: NoteDateFormatter): NoteMainInteractor =
+        NoteMainInteractorImpl(noteRepository, noteDateFormatter)
 
 
     @Provides

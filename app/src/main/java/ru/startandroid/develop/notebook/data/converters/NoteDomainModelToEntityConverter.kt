@@ -7,13 +7,18 @@ fun NoteDomainModel.toEntity(): NoteEntity =
     if (this.id == null) {
         NoteEntity(
             header = header,
-            description = description
+            description = description,
+            createdDate = createdDate,
+            creationDay = creationDay,
+            formattedDay = formattedTime
         )
     } else {
         NoteEntity(
             id = id,
             header = header,
             description = description,
-            timeStamp = timeStamp ?: 0,
+            createdDate = createdDate,
+            creationDay = creationDay,
+            formattedDay = formattedTime
         )
     }

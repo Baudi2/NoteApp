@@ -5,7 +5,7 @@ import ru.startandroid.develop.notebook.screens.global.model.NoteUi
 
 class NoteDiffCallback : DiffUtil.ItemCallback<NoteUi>() {
     override fun areItemsTheSame(oldItem: NoteUi, newItem: NoteUi) =
-        oldItem.noteId == newItem.noteId
+        oldItem.id == newItem.id
 
     override fun areContentsTheSame(oldItem: NoteUi, newItem: NoteUi) = oldItem == newItem
 }

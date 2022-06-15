@@ -8,7 +8,7 @@ import ru.startandroid.develop.notebook.data.enitities.NoteEntity
 @Dao
 interface NoteDao {
 
-    @Query("SELECT * FROM $NOTE_TABLE_NAME")
+    @Query("SELECT * FROM $NOTE_TABLE_NAME ORDER BY createdDate DESC")
     fun getNotes() : Flow<List<NoteEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

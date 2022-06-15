@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.AppThemeModes
+import ru.startandroid.develop.notebook.core.DateFormatTypes
 import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
@@ -178,7 +179,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         // TODO: this text blinks when adding new item & when updating item and opening the app
         binding?.noteMainNoNotes?.isVisible = notes.isEmpty()
         if (notes.isEmpty()) binding?.noteMainNoNotes?.text = getString(R.string.no_created_notes)
-        noteAdapter.submitList(notes)
+        noteAdapter.submitList(notes.map { changeNotesDatePrefix(it) })
     }
 
     private fun onSearchQueryChanged(query: String) {
@@ -308,6 +309,22 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
                 TimedSnackBar.LENGTH_LONG
             ) { viewModel.insertAllNotes(notes) }
         }
+    }
+
+    private fun changeNotesDatePrefix(note: NoteUi): NoteUi {
+        if (note.formattedTime.contains(DateFormatTypes.TODAY.name)) {
+            note.formattedTime = note.formattedTime.replace(
+                DateFormatTypes.TODAY.name,
+                "${getString(R.string.note_created_day_type_today)} "
+            )
+        }
+        if (note.formattedTime.contains(DateFormatTypes.YESTERDAY.name)) {
+            note.formattedTime = note.formattedTime.replace(
+                DateFormatTypes.YESTERDAY.name,
+                "${getString(R.string.note_created_day_type_yesterday)} "
+            )
+        }
+        return note
     }
 
     private fun keyboardOpenListener(isListening: Boolean) {

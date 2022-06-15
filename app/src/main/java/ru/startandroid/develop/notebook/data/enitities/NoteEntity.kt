@@ -3,6 +3,7 @@ package ru.startandroid.develop.notebook.data.enitities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.text.DateFormat
+import java.util.*
 
 @Entity(tableName = NOTE_TABLE_NAME)
 data class NoteEntity(
@@ -10,7 +11,7 @@ data class NoteEntity(
     val id: Int = 0,
     val header: String,
     val description: String,
-    val timeStamp: Long,
+    val createdDate: Date,
     val creationDay: Int,
     val formattedDay: String
 )

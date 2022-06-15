@@ -13,7 +13,7 @@ class NoteViewHolder(
         with(binding) {
             noteItemHeaderTextView.text = note.header
             noteItemDescTextView.text = note.description
-            noteItemTimeStamp.text = note.createdDateFormatted
+            noteItemTimeStamp.text = note.formattedTime
 
             if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                 root.setOnClickListener { listener.onItemClick(note) }

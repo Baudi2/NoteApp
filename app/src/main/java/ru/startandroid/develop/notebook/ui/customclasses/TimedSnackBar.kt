@@ -20,8 +20,8 @@ class TimedSnackBar(private val view: View) {
         cancelAction: () -> Unit
     ) {
         initBinding()
-        setupSnackBar(duration.toInt() - 1000)
-        initViews(title, cancelMessage, (duration / 1000).toString(), cancelAction)
+        setupSnackBar(duration.toInt() - MILLIS_IN_SECOND.toInt())
+        initViews(title, cancelMessage, (duration / MILLIS_IN_SECOND).toString(), cancelAction)
         setupTimer(duration)
         snackBar?.show()
     }
@@ -61,9 +61,9 @@ class TimedSnackBar(private val view: View) {
 
     private fun setupTimer(duration: Long) {
         binding?.let { binding ->
-            timer = object : CountDownTimer(duration, 1000) {
+            timer = object : CountDownTimer(duration, MILLIS_IN_SECOND) {
                 override fun onTick(millisUntilFinished: Long) {
-                    binding.timedSnackbarTimer.text = (millisUntilFinished / 1000).toString()
+                    binding.timedSnackbarTimer.text = (millisUntilFinished / MILLIS_IN_SECOND).toString()
                 }
 
                 override fun onFinish() {}
@@ -80,6 +80,8 @@ class TimedSnackBar(private val view: View) {
     }
 
     companion object {
+
+        private const val MILLIS_IN_SECOND = 1000L
 
         const val LENGTH_LONG = 8000L
         const val LENGTH_SHORT = 5005L

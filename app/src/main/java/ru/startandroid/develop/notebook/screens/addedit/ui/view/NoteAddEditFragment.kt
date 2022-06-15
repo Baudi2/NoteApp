@@ -1,34 +1,32 @@
 package ru.startandroid.develop.notebook.screens.addedit.ui.view
 
 import android.os.Bundle
-import android.view.*
-import androidx.fragment.app.Fragment
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ru.startandroid.develop.notebook.R
+import ru.startandroid.develop.notebook.core.Constants.MAIN_DATE_FORMAT
 import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.core.extensions.toast
 import ru.startandroid.develop.notebook.databinding.NoteAddEditFragmentBinding
 import ru.startandroid.develop.notebook.screens.addedit.ui.presentation.NoteAddEditViewModel
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
+import ru.startandroid.develop.notebook.ui.baseclasses.BaseFragment
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
-class NoteAddEditFragment : Fragment() {
-
-    private var binding: NoteAddEditFragmentBinding? = null
+class NoteAddEditFragment :
+    BaseFragment<NoteAddEditFragmentBinding>(NoteAddEditFragmentBinding::inflate) {
 
     private val args: NoteAddEditFragmentArgs by navArgs()
 
     private val viewModel by viewModels<NoteAddEditViewModel>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        binding = NoteAddEditFragmentBinding.inflate(inflater, container, false)
-        return binding?.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,17 +43,12 @@ class NoteAddEditFragment : Fragment() {
         when (item.itemId) {
             R.id.noteMainFragment -> {
                 val note = args.note
-                if (note != null) updateNote(note)
-                else saveItem()
+                if (note != null) saveItem(note)
+                else saveItem(null)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
-    }
 
     private fun initViews() {
         binding?.let { binding ->
@@ -72,34 +65,21 @@ class NoteAddEditFragment : Fragment() {
         }
     }
 
-    private fun saveItem() {
+    private fun saveItem(noteForUpdate: NoteUi?) {
         if (validateInputFields()) {
-            viewModel.insertItem(
-                NoteUi(
-                    noteId = null,
-                    header = binding?.noteAddEditEditTextHeader?.text.toString(),
-                    description = binding?.noteAddEditDescEditText?.text.toString(),
-                    timeStamp = null,
-                    createdDateFormatted = null
-                )
+            val date = Date()
+            val createdDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+            val formattedTime = SimpleDateFormat(MAIN_DATE_FORMAT, Locale.getDefault()).format(date)
+            val note = NoteUi(
+                id = noteForUpdate?.id,
+                header = binding?.noteAddEditEditTextHeader?.text.toString(),
+                description = binding?.noteAddEditDescEditText?.text.toString(),
+                createdDate = date,
+                creationDay = createdDay,
+                formattedTime = formattedTime
             )
-            val action =
-                NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
-            findNavController().navigate(action)
-        }
-    }
-
-    private fun updateNote(note: NoteUi) {
-        if (validateInputFields()) {
-            viewModel.updatedItem(
-                NoteUi(
-                    noteId = note.noteId,
-                    header = binding?.noteAddEditEditTextHeader?.text.toString(),
-                    description = binding?.noteAddEditDescEditText?.text.toString(),
-                    timeStamp = note.timeStamp,
-                    createdDateFormatted = note.createdDateFormatted
-                )
-            )
+            if (noteForUpdate == null) viewModel.insertItem(note)
+            else viewModel.updatedItem(note)
             val action =
                 NoteAddEditFragmentDirections.actionNoteAddEditFragmentToNoteMainFragment()
             findNavController().navigate(action)

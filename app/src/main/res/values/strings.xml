@@ -20,6 +20,8 @@
     <string name="empty_search_result_message">Заметки не найдены</string>
     <string name="cancel_note_deletion_message">Заметка была удалена</string>
     <string name="cancel_all_notes_deletion_message">Заметки были удалены</string>
+    <string name="note_created_day_type_today">Сегодня</string>
+    <string name="note_created_day_type_yesterday">Вчера</string>
 
     <!-- Note Add Edit Fragment -->
     <string name="header_edit_text">Заголовок</string>

@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.startandroid.develop.notebook.R
 import ru.startandroid.develop.notebook.core.AppThemeModes
+import ru.startandroid.develop.notebook.core.DateFormatTypes
 import ru.startandroid.develop.notebook.core.extensions.showKeyboard
 import ru.startandroid.develop.notebook.databinding.NoteMainFragmentBinding
 import ru.startandroid.develop.notebook.screens.global.model.NoteUi
@@ -31,57 +32,23 @@ import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteItemClickLis
 import ru.startandroid.develop.notebook.screens.main.ui.presentation.NoteMainViewModel
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
+import ru.startandroid.develop.notebook.ui.baseclasses.BaseFragment
 import ru.startandroid.develop.notebook.ui.customclasses.TimedSnackBar
 
 @AndroidEntryPoint
-class NoteMainFragment : Fragment(), NoteItemClickListener {
-
-    private var binding: NoteMainFragmentBinding? = null
+class NoteMainFragment : BaseFragment<NoteMainFragmentBinding>(NoteMainFragmentBinding::inflate), NoteItemClickListener {
 
     private val viewModel by viewModels<NoteMainViewModel>()
 
     private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
 
-    // возможно вынести в базовый класс
-    private val viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
-        val rect = Rect()
-        binding?.root?.getWindowVisibleDisplayFrame(rect)
-        val screenHeight: Int = binding?.root?.rootView?.height ?: 0
-        val keypadHeight: Int = screenHeight - rect.bottom
-
-        if (keypadHeight > screenHeight * 0.15) {
-            // keyboard is opened
-            if (!isKeyboardShowing) {
-                isKeyboardShowing = true
-                keyboardVisibilityListener(true)
-            }
-        } else {
-            // keyboard is closed
-            if (isKeyboardShowing) {
-                isKeyboardShowing = false
-                keyboardVisibilityListener(false)
-            }
-        }
-    }
-
-    private var isKeyboardShowing = false
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        binding = NoteMainFragmentBinding.inflate(inflater, container, false)
-        return binding?.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = NoteMainFragmentBinding.bind(view)
         setHasOptionsMenu(true)
         initViews()
         collectNotes()
         initRecyclerView()
         modeChooserResultListener()
-        keyboardOpenListener(true)
     }
 
     override fun onItemClick(note: NoteUi) {
@@ -125,10 +92,12 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        keyboardOpenListener(false)
-        binding = null
+    override fun keyboardVisibilityListener(isOpen: Boolean) {
+        binding?.let { binding ->
+            with(binding) {
+                noteMainFabAddNote.isVisible = !isOpen
+            }
+        }
     }
 
     private fun initViews() {
@@ -158,14 +127,6 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    private fun keyboardVisibilityListener(isOpen: Boolean) {
-        binding?.let { binding ->
-            with(binding) {
-                noteMainFabAddNote.isVisible = !isOpen
-            }
-        }
-    }
-
     private fun collectNotes() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -178,7 +139,7 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         // TODO: this text blinks when adding new item & when updating item and opening the app
         binding?.noteMainNoNotes?.isVisible = notes.isEmpty()
         if (notes.isEmpty()) binding?.noteMainNoNotes?.text = getString(R.string.no_created_notes)
-        noteAdapter.submitList(notes)
+        noteAdapter.submitList(notes.map { changeNotesDatePrefix(it) })
     }
 
     private fun onSearchQueryChanged(query: String) {
@@ -310,8 +271,19 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    private fun keyboardOpenListener(isListening: Boolean) {
-        if (isListening) binding?.root?.viewTreeObserver?.addOnGlobalLayoutListener(viewTreeObserver)
-        else binding?.root?.viewTreeObserver?.removeOnGlobalLayoutListener(viewTreeObserver)
+    private fun changeNotesDatePrefix(note: NoteUi): NoteUi {
+        if (note.formattedTime.contains(DateFormatTypes.TODAY.name)) {
+            note.formattedTime = note.formattedTime.replace(
+                DateFormatTypes.TODAY.name,
+                "${getString(R.string.note_created_day_type_today)} "
+            )
+        }
+        if (note.formattedTime.contains(DateFormatTypes.YESTERDAY.name)) {
+            note.formattedTime = note.formattedTime.replace(
+                DateFormatTypes.YESTERDAY.name,
+                "${getString(R.string.note_created_day_type_yesterday)} "
+            )
+        }
+        return note
     }
 }

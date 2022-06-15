@@ -7,6 +7,7 @@ fun NoteEntity.toDomain() = NoteDomainModel(
     id = id,
     header = header,
     description = description,
-    timeStamp = timeStamp,
-    createdDateFormatted = createdDateFormatted
+    createdDate = createdDate,
+    creationDay = creationDay,
+    formattedTime = formattedDay
 )

@@ -10,10 +10,9 @@ data class NoteEntity(
     val id: Int = 0,
     val header: String,
     val description: String,
-    val timeStamp: Long = System.currentTimeMillis()
-) {
-    val createdDateFormatted: String
-        get() = DateFormat.getDateTimeInstance().format(timeStamp)
-}
+    val timeStamp: Long,
+    val creationDay: Int,
+    val formattedDay: String
+)
 
 const val NOTE_TABLE_NAME = "note_table"

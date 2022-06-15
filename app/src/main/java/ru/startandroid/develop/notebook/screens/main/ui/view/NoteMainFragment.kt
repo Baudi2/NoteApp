@@ -32,57 +32,23 @@ import ru.startandroid.develop.notebook.screens.main.ui.adapter.NoteItemClickLis
 import ru.startandroid.develop.notebook.screens.main.ui.presentation.NoteMainViewModel
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_MODE_KEY
 import ru.startandroid.develop.notebook.screens.main.ui.view.DarkModeChooserDialog.Companion.DARK_MODE_CHOOSER_DIALOG_RESULT_KEY
+import ru.startandroid.develop.notebook.ui.baseclasses.BaseFragment
 import ru.startandroid.develop.notebook.ui.customclasses.TimedSnackBar
 
 @AndroidEntryPoint
-class NoteMainFragment : Fragment(), NoteItemClickListener {
-
-    private var binding: NoteMainFragmentBinding? = null
+class NoteMainFragment : BaseFragment<NoteMainFragmentBinding>(NoteMainFragmentBinding::inflate), NoteItemClickListener {
 
     private val viewModel by viewModels<NoteMainViewModel>()
 
     private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this) }
 
-    // возможно вынести в базовый класс
-    private val viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
-        val rect = Rect()
-        binding?.root?.getWindowVisibleDisplayFrame(rect)
-        val screenHeight: Int = binding?.root?.rootView?.height ?: 0
-        val keypadHeight: Int = screenHeight - rect.bottom
-
-        if (keypadHeight > screenHeight * 0.15) {
-            // keyboard is opened
-            if (!isKeyboardShowing) {
-                isKeyboardShowing = true
-                keyboardVisibilityListener(true)
-            }
-        } else {
-            // keyboard is closed
-            if (isKeyboardShowing) {
-                isKeyboardShowing = false
-                keyboardVisibilityListener(false)
-            }
-        }
-    }
-
-    private var isKeyboardShowing = false
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        binding = NoteMainFragmentBinding.inflate(inflater, container, false)
-        return binding?.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = NoteMainFragmentBinding.bind(view)
         setHasOptionsMenu(true)
         initViews()
         collectNotes()
         initRecyclerView()
         modeChooserResultListener()
-        keyboardOpenListener(true)
     }
 
     override fun onItemClick(note: NoteUi) {
@@ -126,10 +92,12 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        keyboardOpenListener(false)
-        binding = null
+    override fun keyboardVisibilityListener(isOpen: Boolean) {
+        binding?.let { binding ->
+            with(binding) {
+                noteMainFabAddNote.isVisible = !isOpen
+            }
+        }
     }
 
     private fun initViews() {
@@ -156,14 +124,6 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             adapter = noteAdapter
             layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
             setHasFixedSize(true)
-        }
-    }
-
-    private fun keyboardVisibilityListener(isOpen: Boolean) {
-        binding?.let { binding ->
-            with(binding) {
-                noteMainFabAddNote.isVisible = !isOpen
-            }
         }
     }
 
@@ -325,10 +285,5 @@ class NoteMainFragment : Fragment(), NoteItemClickListener {
             )
         }
         return note
-    }
-
-    private fun keyboardOpenListener(isListening: Boolean) {
-        if (isListening) binding?.root?.viewTreeObserver?.addOnGlobalLayoutListener(viewTreeObserver)
-        else binding?.root?.viewTreeObserver?.removeOnGlobalLayoutListener(viewTreeObserver)
     }
 }
